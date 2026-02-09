@@ -36,7 +36,7 @@ cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 500)
 
-mp_drawing = mp.solutions.drawing_utils
+mp_drawing = mp.solutions.drawing_utils # Imports mediapipe solutions and vision
 mp_hands = mp.solutions.hands
 hand = mp_hands.Hands(static_image_mode=False,
     max_num_hands=2,
@@ -48,7 +48,7 @@ while True:
     success, frame = cap.read()
     frame = cv2.flip(frame, 1)
     if success:
-        RGB_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        RGB_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) # RGB conversion
         result = hand.process(RGB_frame)
         right_ok_now = False
 
@@ -86,7 +86,7 @@ while True:
 
         right_ok_active = right_ok_now
         cv2.imshow("capture image", frame)
-        if cv2.waitKey(1) == ord('q'):
+        if cv2.waitKey(1) == ord('q'): # If there is a key in this case q quits the program
             break
 
 outport.send(mido.Message('note_off', note=NOTE, velocity=0, channel=MIDI_CH))
