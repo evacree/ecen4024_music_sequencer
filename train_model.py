@@ -20,6 +20,8 @@ X_train, X_test, y_train, y_test = train_test_split(
 model = RandomForestClassifier(random_state=42)
 model.fit(X_train, y_train)
 
+
+
 pred = model.predict(X_test)
 
 with open(MODEL_PATH, "wb") as f:

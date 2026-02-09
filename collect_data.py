@@ -10,12 +10,12 @@ def main():
     parser = argparse.ArgumentParser(description="Collect hand landmark data for a gesture label.")
     parser.add_argument("--label", required=True, help="Name of the gesture class (e.g., thumbs_up)")
     parser.add_argument("--samples", type=int, default=200, help="Number of frames to capture")
-    parser.add_argument("--outfile", default="data/gesture_data.csv", help="CSV output path")
+    parser.add_argument("--outfile", default='gesture_data.csv', help="CSV output path")
     parser.add_argument("--min_detection_confidence", type=float, default=0.7)
     parser.add_argument("--min_tracking_confidence", type=float, default=0.5)
     args = parser.parse_args()
 
-    os.makedirs(os.path.dirname(args.outfile), exist_ok=True)
+   # os.makedirs(os.path.dirname(args.outfile), exist_ok=True)
 
     mp_hands = mp.solutions.hands
     mp_drawing = mp.solutions.drawing_utils
@@ -47,6 +47,7 @@ def main():
     ) as hands:
         while True:
             ret, frame = cap.read()
+            frame = cv2.flip(frame, 1)
             if not ret:
                 break
             image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
