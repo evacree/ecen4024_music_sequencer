@@ -20,7 +20,7 @@ import pickle
 from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
 
-PORT_NAME = "MediaPipe_to_PureData"
+PORT_NAME = "MediaPipe_to_PureData 1"
 MIDI_CH   = 0                         # 0 = channel 1
 NOTE      = 60                        # middle C
 VEL       = 100   
