@@ -1,0 +1,6 @@
+#N canvas 160 160 1920 1086 12;
+#X obj 740 359 notein;
+#X obj 728 410 print MIDI;
+#X connect 0 0 1 0;
+#X connect 0 1 1 0;
+#X connect 0 2 1 0;
