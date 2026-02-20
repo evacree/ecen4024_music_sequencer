@@ -4,7 +4,13 @@
 s.boot;
 MIDIClient.init;
 
-MIDIIn.connectAll;
+~port = MIDIClient.sources.detect { |src|
+    src.device.contains("SynthPort")
+};
+
+//MIDIIn.connectAll;
+
+MIDIIn.connect(0, ~port);
 
 ~bus = Bus.audio(s, 2);
 
