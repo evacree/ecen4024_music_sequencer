@@ -25,18 +25,18 @@ MIDI_CH   = 0      #channel
 VEL       = 100   #volume
 
 GESTURE_TO_NOTE = {
-    "ok": 60,          # C
-    "thumbs_up": 62,   # D
-    "one" : 64,
-    "two" : 65,
-    "three" : 67,
-    "four" : 69,
-    "five" : 71,
-    "six" : 72,
-    "seven" : 76,
-    "eight" : 78,
-    "nine" : 80,
-    "ten" : 82
+    "ok": 60,          # C3
+    "thumbs_up": 62,   # D3
+    "one" : 64, # E3
+    "two" : 65, # F3
+    "three" : 67, # G3
+    "four" : 69, # A3
+    "five" : 71, # B3
+    "six" : 72, # C4
+    "seven" : 76, # E4
+    "eight" : 78, # F#4
+    "nine" : 80, # G#4
+    "ten" : 82 # A#4
 }
 
 
@@ -66,7 +66,7 @@ MODEL_PATH = "gesture_model.pkl"
 with open(MODEL_PATH, "rb") as f:
     data = pickle.load(f)
 
-cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) # Windows DirectShow chosen
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 500)
 
@@ -250,4 +250,3 @@ cv2.destroyAllWindows()
 #puredata
 #make if statements for all notes
 #update mediapipe and python
-
