@@ -25,15 +25,15 @@ MIDI_CH   = 0      #channel
 VEL       = 100   #volume
 
 GESTURE_TO_NOTE = {
-    "ok": 60,          # C
-    "thumbs_up": 62,   # D
+    "ok": 60,          # C major scale
+    "thumbs_up": 62,   # 
     "one" : 64,
     "two" : 65,
     "three" : 67,
     "four" : 69,
     "five" : 71,
-    "six" : 72,
-    "seven" : 76,
+    "six" : 72, #end
+    "seven" : 76, #extra notes
     "eight" : 78,
     "nine" : 80,
     "ten" : 82
@@ -70,15 +70,15 @@ cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 500)
 
-mp_drawing = mp.solutions.drawing_utils # Imports mediapipe solutions and vision
+mp_drawing = mp.solutions.drawing_utils 
 mp_hands = mp.solutions.hands
 hand = mp_hands.Hands(static_image_mode=False,
     max_num_hands=2,
     min_detection_confidence=0.4,
     min_tracking_confidence=0.4)
 
-STABLE_ON  = 4   # frames needed to accept a gesture
-STABLE_OFF = 4   # frames needed to release to None
+STABLE_ON  = 4   
+STABLE_OFF = 4   
 
 candidate = None
 cand_count = 0
@@ -88,7 +88,7 @@ none_count = 0
 current_note = None
 
 
-
+#loop
 try:
 
     while True:
@@ -197,7 +197,7 @@ try:
                 candidate = active_gesture
                 cand_count = 1
 
-            # stabilize gesture (switch only after STABLE_ON frames)
+            # debounce
             if candidate is None:
                 none_count += 1
                 if none_count >= STABLE_OFF:
@@ -207,7 +207,7 @@ try:
                 if cand_count >= STABLE_ON:
                     stable_gesture = candidate
 
-            # MIDI state machine
+            
             target_note = GESTURE_TO_NOTE.get(stable_gesture)
 
             if target_note != current_note:
@@ -220,12 +220,12 @@ try:
 
             
             cv2.imshow("capture image", frame)
-            if cv2.waitKey(1) == ord('q'): # If there is a key in this case q quits the program
+            if cv2.waitKey(1) == ord('q'): # press q to quit
                 break
             time.sleep(0.005)
 
 finally:
-    # ALWAYS executed even on crash / ctrl+c / window close
+    # executed on close
     try:
         if current_note is not None:
             note_off(current_note)
@@ -247,7 +247,5 @@ cv2.destroyAllWindows()
 #thumbs_up
 #1-10
 
-#puredata
-#make if statements for all notes
-#update mediapipe and python
+#more data samples
 
