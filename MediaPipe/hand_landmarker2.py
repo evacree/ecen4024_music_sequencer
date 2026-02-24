@@ -66,7 +66,7 @@ MODEL_PATH = "gesture_model.pkl"
 with open(MODEL_PATH, "rb") as f:
     data = pickle.load(f)
 
-cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) # Windows DirectShow chosen
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 500)
 

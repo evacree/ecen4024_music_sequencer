@@ -1,0 +1,14 @@
+# --- Core ---
+mediapipe==0.10.21
+numpy==1.26.4
+opencv-python==4.11.0.86
+
+# --- MIDI ---
+mido==1.3.3
+python-rtmidi==1.5.8
+
+# --- Machine Learning (for gesture_model.pkl) ---
+scikit-learn==1.7.2
+joblib==1.5.3
+threadpoolctl==3.6.0
+scipy==1.15.3
