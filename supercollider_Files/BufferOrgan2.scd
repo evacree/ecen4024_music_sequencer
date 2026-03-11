@@ -5,7 +5,7 @@ s.boot;
 MIDIClient.init;
 
 ~port = MIDIClient.sources.detect { |src|
-    src.device.contains("SynthPort")
+    src.device.contains("SynthPort") //Port name
 };
 
 //MIDIIn.connectAll;
