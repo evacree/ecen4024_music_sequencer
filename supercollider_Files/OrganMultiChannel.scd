@@ -243,6 +243,18 @@ for(0, 8){
 ~updateDrawbars.();
 ~updateTables.();
 
+~settings2[0] = 8;
+~settings2[1] = 8;
+~settings2[2] = 8;
+~settings2[3] = 8;
+~settings2[4] = 8;
+~settings2[5] = 8;
+~settings2[6] = 8;
+~settings2[7] = 8;
+~settings2[8] = 8;
+~updateDrawbars2.();
+~updateTables2.();
+
 SynthDef(\leslieFX, { |inBus=0, out=0,
     slow=0.4,        // chorale speed (Hz)
     fast=6.0,        // tremolo speed (Hz)
@@ -293,7 +305,7 @@ SynthDef(\leslieFX, { |inBus=0, out=0,
 
 MIDIdef.noteOn(\noteOnTest, {
 	arg v, note, chan, src;
-	[v, note, chan, src].postln;
+	[v, note, chan, src, "IN"].postln;
 	if(chan == 0){
 		~notes[note].set(\gate, -1);
 	case(
@@ -453,6 +465,7 @@ MIDIdef.noteOn(\noteOnTest, {
 
 MIDIdef.noteOff(\noteOffTest, {
 	arg v, note, chan, src;
+	["000", note, chan, src, "OFF"].postln;
 	if(chan == 0){
 		~notes[note].set(\gate, -1);
 		~notes[note] = nil;
