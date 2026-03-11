@@ -1,13 +1,104 @@
 from PySide6.QtWidgets import *
 # from PySide6 import QtWidgets, QHBoxLayout
 from PySide6.QtWidgets import QHBoxLayout
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, QThread, QObject, Signal, Slot
 from PySide6.QtGui import QImage, QPixmap
 import cv2
 import mediapipe as mp
 from mediapipe import solutions
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
+
+# Camera worker object to thread it
+
+class CameraWorker(QObject):
+    """Worker to execute camera background tasks"""
+    frame_ready = Signal(QImage)
+    gesture_ready = Signal(str)
+    error = Signal(str)
+    finished = Signal()
+
+    def __init__(self, camera_index=0, model=None):
+        super(). __init__()
+        self.camera_index = camera_index
+        self.model = model
+        self.running = False
+
+    @Slot()
+    def process(self):
+        self.running = True
+        cap = cv2.VideoCapture(self.camera_index)
+        if not cap.isOpened:
+            self.error.emit("\nCould not open camera.\n")
+            self.finished.emit()
+            return
+            
+        mp_drawing = mp.solutions.drawing.utils
+        mp_hands = mp.solutions.hands
+
+        with mp_hands.Hands(
+            static_image_mode = False,
+            with_max_num_hands = 2,
+            min_detection_confidence = 0.6,
+            min_tracking_confidence = 0.6,
+            model_complexity = 0,
+        ) as hands:
+                
+            while self.running:
+                success, frame = cap.read()
+                if not success:
+                    continue
+
+                frame = cv2.flip(frame ,1)
+                rgb = cv2.cvtColor(frame, cv2.COLOR_BRG2RGB)
+                result = hands.process(rgb)
+
+                active_gesture = "none"
+
+                if result.multi_hand_landmarks and result.multi_headedness:
+                    h, w = frame.shape[:2]
+                    for hand_landmarks, handed in zip(result.multi_hand_landmarks, result.multi_headedness):
+                        hand_label = handed.classification[0].label
+
+                        if hand_label != Right:
+                            mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+                            continue
+
+                        coords = []
+                        for lm in hand_landmarks.landmark:
+                            coords.extend([lm.x, lm.y, lm.z])
+
+                        if self.model is not None:
+                            gesture = self.model.predict([coords])[0]
+                            active_gesture = str(gesture)
+                        else:
+                            active_gesture = "no-model"
+
+                        wrist = hand_landmarks.landmark[0]
+                        px, py = int(wrist.x * w), int(wrist.y * h)
+
+                        cv2.putText(frame, f"{hand_label}: {active_gesture}",
+                                    (px, py, -10),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2
+                                    )
+                        mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+                        break
+
+                rgb_out = cv2.cvtColor(frame, cv2.COLOR_BRG2RGB)
+                h, w, ch = rgb_out.shape
+                qimg = QImage(rgb_out.data, w, h, ch * w, QImage.Format_RGB888).copy()
+
+                self.frame_ready.emit(qimg)
+                self.gesture_ready.emit(active_gesture)
+
+        cap.release()
+        self.finished.emit()
+
+    @Slot()
+    def stop(self):
+        self.running = False
+
+
 
 # Define a window class
 class MainWindow(QMainWindow):
@@ -61,78 +152,9 @@ class MainWindow(QMainWindow):
         self.init_camera_and_mediapipe()
         self.model = None
 
-    def init_camera_and_mediapipe(self, camera_index=0):
-        # OpenCV camera
-        self.cap = cv2.VideoCapture(camera_index)
-        if not self.cap.isOpened():
-            print("Could not open camera")
-            return
+    
 
-        # Existing MediaPipe landmarker setup
-        self.mp_drawing = mp.solutions.drawing_utils
-        self.mp_hands = mp.solutions.hands
-        self.hands = self.mp_hands.Hands(
-            static_image_mode=False,
-            max_num_hands=2,
-            min_detection_confidence=0.4,
-            min_tracking_confidence=0.4,
-         # model_complexity=0,  # uncomment for more speed if acceptable
-        )
-            
-
-        # Timer to process one frame at a time
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_frame)  # calls method below
-        self.timer.start(30)  # ms
-
-    def process_one_frame_with_mediapipe(self):
-        if not hasattr(self, "cap"):
-            return None
-
-        success, frame = self.cap.read()
-        if not success:
-            return None
-
-        frame = cv2.flip(frame, 1)
-        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        result = self.hands.process(rgb)
-
-        if result.multi_hand_landmarks and result.multi_handedness:
-            h, w = frame.shape[:2]
-
-            for hand_landmarks, handed in zip(result.multi_hand_landmarks, result.multi_handedness):
-                hand_label = handed.classification[0].label  # 'Right' or 'Left'
-                if hand_label != "Right":
-                # Still draw if you want, but ignore for control
-                    self.mp_drawing.draw_landmarks(frame, hand_landmarks, self.mp_hands.HAND_CONNECTIONS)
-                    continue
-
-                coords = []
-                for lm in hand_landmarks.landmark:
-                    coords.extend([lm.x, lm.y, lm.z])
-
-                # Predict gesture (expects list-of-features)
-                if self.model is not None:
-                    gesture = self.model.predict([coords])[0]
-                    active_gesture = str(gesture)
-                else:
-                    active_gesture = "no-model"
-
-
-                wrist = hand_landmarks.landmark[0]
-                px, py = int(wrist.x * w), int(wrist.y * h)
-                cv2.putText(
-                    frame,
-                    f"{hand_label}: {active_gesture}",
-                    (px, py - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    1,
-                    (0, 255, 0),
-                    2,
-                )
-                self.mp_drawing.draw_landmarks(frame, hand_landmarks, self.mp_hands.HAND_CONNECTIONS)
-
-                return frame
+    
 
     def update_frame(self):
         """Called by QTimer: process one frame and display it in video_label."""
