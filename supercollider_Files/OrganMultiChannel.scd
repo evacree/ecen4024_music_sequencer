@@ -302,12 +302,9 @@ SynthDef(\leslieFX, { |inBus=0, out=0,
     \mix, 0.6
 ]);
 
-
-MIDIdef.noteOn(\noteOnTest, {
-	arg v, note, chan, src;
-	[v, note, chan, src, "IN"].postln;
-	if(chan == 0){
-		~notes[note].set(\gate, -1);
+~ch0Function = {
+	arg v = 100, note = 60, chan = 0, src = 1;
+	~notes[note].set(\gate, -1);
 	case(
 		{(note >= 36) && (note < 48)},//Lower Foldback
 		{~notes[note] = Synth.new(\organ, [
@@ -379,8 +376,11 @@ MIDIdef.noteOn(\noteOnTest, {
 		{note==108},{~highSetting = 1;},
 		{}
 	);
-	}{if(chan == 1){
-		~notes2[note].set(\gate, -1);
+};
+
+~ch1Function = {
+	arg v = 100, note = 60, chan = 1, src = 1;
+	~notes2[note].set(\gate, -1);
 	case(
 		{(note >= 36) && (note < 48)},//Lower Foldback
 		{~notes2[note] = Synth.new(\organ, [
@@ -452,6 +452,16 @@ MIDIdef.noteOn(\noteOnTest, {
 		{note==108},{~highSetting2 = 1;},
 		{}
 	);
+};
+
+
+MIDIdef.noteOn(\noteOnTest, {
+	arg v, note, chan, src;
+	[v, note, chan, src, "IN"].postln;
+	if(chan == 0){
+		~ch0Function.(v, note, chan, src);
+	}{if(chan == 1){
+		~ch1Function.(v, note, chan, src);
 	}{}};
 });
 
