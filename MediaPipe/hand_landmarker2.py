@@ -20,12 +20,19 @@ import pickle
 from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
 
+
+
+
 PORT_NAME = "MediaPipe_to_PureData 1"
 MIDI_CH   = 0      #channel
 VEL       = 100   #volume
 
+n = 60
+default_n = 60
+notecount = 0
+
 GESTURE_TO_NOTE = {
-    "ok": 60,          # C major scale
+    "ok": 60,          #  major scale
     "thumbs_up": 62,   # 
     "one" : 64,
     "two" : 65,
@@ -42,7 +49,7 @@ GESTURE_TO_NOTE = {
 
 
 outport = mido.open_output(PORT_NAME)
-print(mido.get_output_names())
+#print(mido.get_output_names())
 
 def midi_panic(outport):#in case of crash
     
@@ -70,6 +77,8 @@ cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) # Windows DirectShow chosen
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 500)
 
+
+
 mp_drawing = mp.solutions.drawing_utils 
 mp_hands = mp.solutions.hands
 hand = mp_hands.Hands(static_image_mode=False,
@@ -77,8 +86,8 @@ hand = mp_hands.Hands(static_image_mode=False,
     min_detection_confidence=0.4,
     min_tracking_confidence=0.4)
 
-STABLE_ON  = 4   
-STABLE_OFF = 4   
+STABLE_ON  = 4   #frames of a gesture before note turns on
+STABLE_OFF = 4   #frames w/o gesture for note to turn off
 
 candidate = None
 cand_count = 0
@@ -86,6 +95,15 @@ cand_count = 0
 stable_gesture = None
 none_count = 0
 current_note = None
+
+#latency tracking
+pending_on_label = None
+pending_on_frames = 0
+
+pending_off_frames = 0
+last_stable_gesture = None
+
+stable_on_duration = 0  # how long the confirmed gesture stayed ON (frames)
 
 
 #loop
@@ -124,7 +142,7 @@ try:
                     px, py = int(wrist.x * w), int(wrist.y * h)
 
                     cv2.putText(frame, f"{hand_label}: {gesture}", (px, py -10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                    print(f"{hand_label} = {gesture}")
+                    #print(f"{hand_label} = {gesture}")
                     if hand_label == 'Right' and gesture == 'ok':
                         right_ok_now = True
                     if hand_label == 'Right' and gesture == 'thumbs_up':
@@ -185,10 +203,10 @@ try:
             if target_note != current_note:
                 if current_note is not None:
                     note_off(current_note)
-                    print(f"NOTE OFF {current_note}")
+                   # print(f"NOTE OFF {current_note}")
                 if target_note is not None:
                     note_on(target_note)
-                    print(f"NOTE ON {target_note} ({active_gesture})")
+                   # print(f"NOTE ON {target_note} ({active_gesture})")
                 current_note = target_note
             
             if active_gesture == candidate:
@@ -207,7 +225,36 @@ try:
                 if cand_count >= STABLE_ON:
                     stable_gesture = candidate
 
+            #latency tracking again
+
+            #ON
+            if stable_gesture is None:
+                
+                pending_on_label = candidate
+                pending_on_frames = cand_count if candidate is not None else 0
+            else:
+        
+                stable_on_duration += 1
+
             
+            if stable_gesture != last_stable_gesture:
+
+                # OFF
+                if last_stable_gesture is not None and stable_gesture is None:
+                    # you only become None after none_count >= STABLE_OFF
+                    #print(f"[OFF] {last_stable_gesture} detected in {STABLE_OFF} frames (was ON for {stable_on_duration} frames)")
+                    stable_on_duration = 0
+
+                # ON transition
+                if last_stable_gesture is None and stable_gesture is not None:
+                   
+                  #print(f"[ON ] {stable_gesture} detected in {STABLE_ON} frames")
+                  print()
+
+                last_stable_gesture = stable_gesture
+
+
+
             target_note = GESTURE_TO_NOTE.get(stable_gesture)
 
             if target_note != current_note:
@@ -216,7 +263,21 @@ try:
                 if target_note is not None:
                     note_on(target_note)
                 current_note = target_note
-                        
+
+
+                if hand_label == 'Left' and gesture == 'ok':
+                    notecount += 1
+                    if notecount >= 15:  # half second - 30 fps 
+                        n += 1
+                        cv2.putText(frame, f"n: {n}", (px, py -50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                        print(n)
+                        notecount = 0
+
+                if hand_label == 'Left' and gesture == 'thumbs_up':
+                    n = default_n
+                    cv2.putText(frame, f"n: {n}", (px, py -50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                    print(n)
+                            
 
             
             cv2.imshow("capture image", frame)
@@ -229,14 +290,15 @@ finally:
     try:
         if current_note is not None:
             note_off(current_note)
-        midi_panic()
+        midi_panic(outport)
         outport.close()
     except Exception as e:
         print("MIDI cleanup error")
     cap.release()
     cv2.destroyAllWindows()
-    
-outport.send(mido.Message('note_off', note=NOTE, velocity=0, channel=MIDI_CH))
+
+
+outport.send(mido.Message('note_off', note=current_note, velocity=0, channel=MIDI_CH))
 outport.close()
 cap.release()
 cv2.destroyAllWindows()    
