@@ -58,14 +58,26 @@ def midi_panic(outport):#in case of crash
         outport.send(mido.Message('control_change', channel=ch, control=123, value=0))  # All Notes Off
         outport.send(mido.Message('control_change', channel=ch, control=121, value=0))  # Reset All Controllers
 
-def note_on(note):
-    outport.send(mido.Message("note_on", note=note, velocity=VEL, channel=MIDI_CH))
+def note_on(note, vel):
+    vel = int(np.clip(vel, 1, 127))
+    outport.send(mido.Message("note_on", note=note, velocity=vel, channel=MIDI_CH))
 
 def note_off(note):
     outport.send(mido.Message("note_off", note=note, velocity=0, channel=MIDI_CH))
 
 def safe_note_off(outport, note, ch):
     outport.send(mido.Message('note_off', note=note, velocity=0, channel=ch))
+
+def set_volume(vol):
+    vol = int(np.clip(vol, 0, 127))
+    outport.send(mido.Message("control_change", channel=MIDI_CH, control=11, value=vol))
+
+def map_range(val, in_min, in_max, out_min, out_max):
+    val = np.clip(val, in_min, in_max)
+    return out_min + (val - in_min) * (out_max - out_min) / (in_max - in_min)
+
+MIN_NOTE = 60
+MAX_NOTE = 72
 
 
 MODEL_PATH = "gesture_model.pkl"
@@ -95,6 +107,8 @@ cand_count = 0
 stable_gesture = None
 none_count = 0
 current_note = None
+last_volume = -1
+current_velocity = None
 
 #latency tracking
 pending_on_label = None
@@ -105,6 +119,12 @@ last_stable_gesture = None
 
 stable_on_duration = 0  # how long the confirmed gesture stayed ON (frames)
 
+smooth_x = 0.5
+smooth_y = 0.5
+alpha = 0.2
+
+VEL_THRESH = 4   # how much volume must change before retrigger
+NOTE_THRESH = 1  # how much note must change before retrigger
 
 #loop
 try:
@@ -118,6 +138,10 @@ try:
             hand_label = None
             gesture = None
             right_ten_now = False
+            target_note = None
+            target_vol = 0
+            theremin = False
+            
 
             if result.multi_hand_landmarks and result.multi_handedness:
                 h, w = frame.shape[:2]
@@ -130,29 +154,56 @@ try:
                     gesture = data.predict([coords])[0]
 
                     wrist = hand_landmarks.landmark[0]
-                    px, py = int(wrist.x * w), int(wrist.y * h)
-                    print("x:", wrist.x, "y:", wrist.y)
+                    right_index_tip = hand_landmarks.landmark[8]
+                    xpos = right_index_tip.x
+                    ypos = right_index_tip.y
+                    cv2.circle(frame, (int(xpos * w), int(ypos * h)), 10, (0, 0, 255), -1)
+                    smooth_x = (1 - alpha) * smooth_x + alpha * xpos
+                    smooth_y = (1 - alpha) * smooth_y + alpha * ypos
 
                     
 
+                    if hand_label == "Right":
+                        theremin = True
+
+                         # x controls note
+                        note_float = map_range(smooth_x, 0.0, 1.0, MIN_NOTE, MAX_NOTE)
+                        target_note = int(round(note_float))
+
+
+                        # y controls volume (inverted: top=loud, bottom=quiet)
+                        vel_float = map_range(smooth_y, 0.0, 1.0, 127, 1)
+                        target_velocity = int(round(vel_float))
+                        print("smooth_x:", round(smooth_x, 3),
+                        "smooth_y:", round(smooth_y, 3),
+                        "note:", target_note,
+                        "vol:", target_velocity)
+
+
                     mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
+            if theremin and target_note is not None:
+                need_new_note = False
+                if current_note is None:
+                    need_new_note = True
+                elif abs(target_note - current_note) >= NOTE_THRESH:
+                    need_new_note = True
+                elif current_velocity is None or abs(target_velocity - current_velocity) >= VEL_THRESH:
+                    need_new_note = True
 
-                    if hand_label == 'Right' and gesture == 'ten':
-                        right_ten_now = True
+                if need_new_note:
+                    if current_note is not None:
+                        note_off(current_note)
+                    note_on(target_note, target_velocity)
+                    current_note = target_note
+                    current_velocity = target_velocity
 
-            target_note = None
-            if right_ten_now and wrist is not None and wrist.x < 0.5:
-                target_note = 60
-
-            if target_note != current_note:
+            else:
                 if current_note is not None:
                     note_off(current_note)
-                if target_note is not None:
-                    note_on(target_note)
-                current_note = target_note
-
-            
+                    current_note = None
+                    current_velocity = None
+                                
             
 
             
