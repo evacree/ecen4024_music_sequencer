@@ -5,7 +5,7 @@ s.boot;
 MIDIClient.init;
 
 ~port = MIDIClient.sources.detect { |src|
-    src.device.contains("PureData_SuperCollider") //Port name
+    src.device.contains("SynthPort")
 };
 
 //MIDIIn.connectAll;
@@ -15,16 +15,24 @@ MIDIIn.connect(0, ~port);
 ~bus = Bus.audio(s, 2);
 
 ~tables = Array.newClear(9);
+~tables2 = Array.newClear(9);
+
 for(0, 8){
 	arg i;
 	~tables[i] = Buffer.alloc(s,2048);
+	~tables2[i] = Buffer.alloc(s,2048);
 };
 
 ~notes = Array.newClear(128);
+~notes2 = Array.newClear(128);
 
 ~settings = Array.newClear(11);
 ~drawbars = Array.newClear(9);
 ~highSetting = 0;
+
+~settings2 = Array.newClear(11);
+~drawbars2 = Array.newClear(9);
+~highSetting2 = 0;
 
 ~updateDrawbars = {
 	if(~settings[0] == 0){~drawbars[0] = 0}{
@@ -53,6 +61,36 @@ for(0, 8){
 	};
 	if(~settings[8] == 0){~drawbars[8] = 0}{
 		~drawbars[8] = (~settings[8]).linexp(0, 8, 0.00001, 0.3);
+	};
+};
+
+~updateDrawbars2 = {
+	if(~settings2[0] == 0){~drawbars2[0] = 0}{
+		~drawbars2[0] = (~settings2[0]).linexp(0, 8, 0.00001, 0.3);
+	};
+	if(~settings2[1] == 0){~drawbars2[1] = 0}{
+		~drawbars2[1] = (~settings2[1]).linexp(0, 8, 0.00001, 0.3);
+	};
+	if(~settings2[2] == 0){~drawbars2[2] = 0}{
+		~drawbars2[2] = (~settings2[2]).linexp(0, 8, 0.00001, 0.3);
+	};
+	if(~settings2[3] == 0){~drawbars2[3] = 0}{
+		~drawbars2[3] = (~settings2[3]).linexp(0, 8, 0.00001, 0.3);
+	};
+	if(~settings2[4] == 0){~drawbars2[4] = 0}{
+		~drawbars2[4] = (~settings2[4]).linexp(0, 8, 0.00001, 0.3);
+	};
+	if(~settings2[5] == 0){~drawbars2[5] = 0}{
+		~drawbars2[5] = (~settings2[5]).linexp(0, 8, 0.00001, 0.3);
+	};
+	if(~settings2[6] == 0){~drawbars2[6] = 0}{
+		~drawbars2[6] = (~settings2[6]).linexp(0, 8, 0.00001, 0.3);
+	};
+	if(~settings2[7] == 0){~drawbars2[7] = 0}{
+		~drawbars2[7] = (~settings2[7]).linexp(0, 8, 0.00001, 0.3);
+	};
+	if(~settings2[8] == 0){~drawbars2[8] = 0}{
+		~drawbars2[8] = (~settings2[8]).linexp(0, 8, 0.00001, 0.3);
 	};
 };
 
@@ -107,22 +145,90 @@ for(0, 8){
 	]);
 };
 
+~updateTables2 = {
+	//Lower Foldback
+	~tables2[0].sine1([
+		0, ~drawbars2[2] + ~drawbars2[0], ~drawbars2[1],
+		~drawbars2[3], 0, ~drawbars2[4], 0, ~drawbars2[5],
+		0, ~drawbars2[6], 0, ~drawbars2[7], 0, 0, 0, ~drawbars2[8]
+	]);
+
+	//Main Register
+	~tables2[1].sine1([
+		~drawbars2[0], ~drawbars2[2], ~drawbars2[1],
+		~drawbars2[3], 0, ~drawbars2[4], 0, ~drawbars2[5],
+		0, ~drawbars2[6], 0, ~drawbars2[7], 0, 0, 0, ~drawbars2[8]
+	]);
+
+	//3rd Octave Foldback
+	~tables2[2].sine1([
+		~drawbars2[0], ~drawbars2[2], ~drawbars2[1],
+		~drawbars2[3], 0, ~drawbars2[4], 0, ~drawbars2[5] + ~drawbars2[8],
+		0, ~drawbars2[6], 0, ~drawbars2[7]
+	]);
+
+	//2nd Octave Fifth Foldback
+	~tables2[3].sine1([
+		~drawbars2[0], ~drawbars2[2], ~drawbars2[1],
+		~drawbars2[3], 0, ~drawbars2[4] + ~drawbars2[7], 0,
+		~drawbars2[5] + ~drawbars2[8], 0, ~drawbars2[6]
+	]);
+
+	//2nd Octave Third Foldback
+	~tables2[4].sine1([
+		~drawbars2[0], ~drawbars2[2], ~drawbars2[1],
+		~drawbars2[3], 0, ~drawbars2[4] + ~drawbars2[7], 0,
+		~drawbars2[5] + ~drawbars2[8]
+	]);
+
+	//2nd Octave Foldback
+	~tables2[5].sine1([
+		~drawbars2[0], ~drawbars2[2], ~drawbars2[1],
+		~drawbars2[3] + ~drawbars2[5] + ~drawbars2[8],
+		0, ~drawbars2[4] + ~drawbars2[7]
+	]);
+
+	//1st Octave Fifth Foldback
+	~tables2[6].sine1([
+		~drawbars2[0], ~drawbars2[2],
+		~drawbars2[1] + ~drawbars2[4] + ~drawbars2[7],
+		~drawbars2[3] + ~drawbars2[5] + ~drawbars2[8]
+	]);
+};
+
 ~changeSettings = {
-	arg setting = 0, increment = 1;
+	arg setting = 0, increment = 1, chan = 0;
 	if(increment == 0){increment = -1}{};
+	if(chan == 0){
 	case(
-		{(setting >= 0) && (setting <9)},
-		{if((increment == 1) && (~settings[setting] < 8))
-			{~settings[setting] = ~settings[setting]+1;}
-			{if((increment == -1) && (~settings[setting] > 0))
-				{~settings[setting] = ~settings[setting]-1;}{}
-		}
-		},
-		{}
-	);
-	~settings.postln;
-	~updateDrawbars.();
-	~updateTables.();
+			{(setting >= 0) && (setting <9)},
+			{if((increment == 1) && (~settings[setting] < 8))
+				{~settings[setting] = ~settings[setting]+1;}
+				{if((increment == -1) && (~settings[setting] > 0))
+					{~settings[setting] = ~settings[setting]-1;}{}
+				}
+			},
+			{}
+		);
+		~settings.postln;
+		~updateDrawbars.();
+		~updateTables.();
+	}{if(chan == 1){
+	case(
+			{(setting >= 0) && (setting <9)},
+			{if((increment == 1) && (~settings2[setting] < 8))
+				{~settings2[setting] = ~settings2[setting]+1;}
+				{if((increment == -1) && (~settings2[setting] > 0))
+					{~settings2[setting] = ~settings2[setting]-1;}{}
+				}
+			},
+			{}
+		);
+		~settings2.postln;
+		~updateDrawbars2.();
+		~updateTables2.();
+	}{}
+	};
 };
 
 ~settings[0] = 8;
@@ -136,6 +242,18 @@ for(0, 8){
 ~settings[8] = 4;
 ~updateDrawbars.();
 ~updateTables.();
+
+~settings2[0] = 8;
+~settings2[1] = 8;
+~settings2[2] = 8;
+~settings2[3] = 8;
+~settings2[4] = 8;
+~settings2[5] = 8;
+~settings2[6] = 8;
+~settings2[7] = 8;
+~settings2[8] = 8;
+~updateDrawbars2.();
+~updateTables2.();
 
 SynthDef(\leslieFX, { |inBus=0, out=0,
     slow=0.4,        // chorale speed (Hz)
@@ -184,12 +302,9 @@ SynthDef(\leslieFX, { |inBus=0, out=0,
     \mix, 0.6
 ]);
 
-
-MIDIdef.noteOn(\noteOnTest, {
-	arg v, note, chan, src;
-	[v, note, chan, src].postln;
+~ch0Function = {
+	arg v = 100, note = 60, chan = 0, src = 1;
 	~notes[note].set(\gate, -1);
-	if(chan == 0){
 	case(
 		{(note >= 36) && (note < 48)},//Lower Foldback
 		{~notes[note] = Synth.new(\organ, [
@@ -261,7 +376,93 @@ MIDIdef.noteOn(\noteOnTest, {
 		{note==108},{~highSetting = 1;},
 		{}
 	);
-	}{};
+};
+
+~ch1Function = {
+	arg v = 100, note = 60, chan = 1, src = 1;
+	~notes2[note].set(\gate, -1);
+	case(
+		{(note >= 36) && (note < 48)},//Lower Foldback
+		{~notes2[note] = Synth.new(\organ, [
+			\freq, note.midicps,
+			\table, ~tables2[0],
+			\gate, 1
+		]);
+		Synth.new(\keyClick, [\amp, 0.02]);
+		},
+		{(note >= 48) && (note <= 78)},//Main Register
+		{~notes2[note] = Synth.new(\organ, [
+			\freq, note.midicps,
+			\table, ~tables2[1],
+			\gate, 1
+		]);
+		Synth.new(\keyClick, [\amp, 0.02]);
+		},
+		{(note > 78) && (note <= 83)},//3rd Octave Foldback
+		{~notes2[note] = Synth.new(\organ, [
+			\freq, note.midicps,
+			\table, ~tables2[2],
+			\gate, 1
+		]);
+		Synth.new(\keyClick, [\amp, 0.02]);
+		},
+		{(note > 83) && (note <= 86)},//2nd Octave Fifth Foldback
+		{~notes2[note] = Synth.new(\organ, [
+			\freq, note.midicps,
+			\table, ~tables2[3],
+			\gate, 1
+		]);
+		Synth.new(\keyClick, [\amp, 0.02]);
+		},
+		{(note > 86) && (note <= 90)},//2nd Octave Third Foldback
+		{~notes2[note] = Synth.new(\organ, [
+			\freq, note.midicps,
+			\table, ~tables2[4],
+			\gate, 1
+		]);
+		Synth.new(\keyClick, [\amp, 0.02]);
+		},
+		{(note > 90) && (note <= 95)},//2nd Octave Foldback
+		{~notes2[note] = Synth.new(\organ, [
+			\freq, note.midicps,
+			\table, ~tables2[5],
+			\gate, 1
+		]);
+		Synth.new(\keyClick, [\amp, 0.02]);
+		},
+		{note==96},//1st Octave Fifth Foldback
+		{~notes2[note] = Synth.new(\organ, [
+			\freq, note.midicps,
+			\table, ~tables2[6],
+			\gate, 1
+		]);
+		Synth.new(\keyClick, [\amp, 0.02]);
+		},
+		{note==97},{~changeSettings.(0, ~highSetting2, 0);},
+		{note==98},{~changeSettings.(1, ~highSetting2, 0);},
+		{note==99},{~changeSettings.(2, ~highSetting2, 0);},
+		{note==100},{~changeSettings.(3, ~highSetting2, 0);},
+		{note==101},{~changeSettings.(4, ~highSetting2, 0);},
+		{note==102},{~changeSettings.(5, ~highSetting2, 0);},
+		{note==103},{~changeSettings.(6, ~highSetting2, 0);},
+		{note==104},{~changeSettings.(7, ~highSetting2, 0);},
+		{note==105},{~changeSettings.(8, ~highSetting2, 0);},
+		{note==106},{~changeSettings.(9, ~highSetting2, 0);},
+		{note==107},{~changeSettings.(10, ~highSetting2, 0);},
+		{note==108},{~highSetting2 = 1;},
+		{}
+	);
+};
+
+
+MIDIdef.noteOn(\noteOnTest, {
+	arg v, note, chan, src;
+	[v, note, chan, src, "IN"].postln;
+	if(chan == 0){
+		~ch0Function.(v, note, chan, src);
+	}{if(chan == 1){
+		~ch1Function.(v, note, chan, src);
+	}{}};
 });
 
 
@@ -274,9 +475,16 @@ MIDIdef.noteOn(\noteOnTest, {
 
 MIDIdef.noteOff(\noteOffTest, {
 	arg v, note, chan, src;
-	~notes[note].set(\gate, -1);
-	~notes[note] = nil;
-	if(note==108){~highSetting = 0;}{};
+	["000", note, chan, src, "OFF"].postln;
+	if(chan == 0){
+		~notes[note].set(\gate, -1);
+		~notes[note] = nil;
+		if(note==108){~highSetting = 0;}{};
+	}{if(chan == 1){
+		~notes2[note].set(\gate, -1);
+		~notes2[note] = nil;
+		if(note==108){~highSetting2 = 0;}{};
+	}{}};
 });
 
 SynthDef.new(\organ, {
