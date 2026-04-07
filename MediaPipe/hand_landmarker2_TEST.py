@@ -49,7 +49,7 @@ FRAME_H = 500
 
 
 def midi_panic(outport_obj: mido.ports.BaseOutput) -> None:
-    """Stop any stuck notes on all channels."""
+    
     for ch in range(16):
         outport_obj.send(mido.Message('control_change', channel=ch, control=120, value=0))  # All Sound Off
         outport_obj.send(mido.Message('control_change', channel=ch, control=123, value=0))  # All Notes Off

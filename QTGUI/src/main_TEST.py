@@ -1,6 +1,5 @@
 # QTGUI/src/main_TEST.py
 # Evan Acree | 4/1/26
-
 import sys
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
@@ -33,7 +32,7 @@ class SequencerGUI(QMainWindow):
         self.step_buttons = {}
         self.visual_offset = -0.7      # Tuneable on GUI for now.
 
-        self.setWindowTitle("Gesture Music Sequencer")
+        self.setWindowTitle("Hand Gesture Music Sequencer")
         self.setGeometry(100, 100, 1350, 780)
 
         central = QWidget()
@@ -57,7 +56,7 @@ class SequencerGUI(QMainWindow):
         controls.addWidget(bpm_group)
 
         # Visual offset (delay) slider.
-        offset_group = QGroupBox("Visual Offset (tune playhead)")
+        offset_group = QGroupBox("Audio-Visual Offset")
         offset_layout = QHBoxLayout()
         self.offset_slider = QSlider(Qt.Orientation.Horizontal)
         self.offset_slider.setRange(-40, 40)
@@ -74,11 +73,9 @@ class SequencerGUI(QMainWindow):
         self.start_btn = QPushButton("▶ Start")
         self.stop_btn = QPushButton("⏹ Stop")
         self.reset_btn = QPushButton("Reset All")
-
         self.start_btn.clicked.connect(self.start_sequencer)
         self.stop_btn.clicked.connect(self.stop_sequencer)
         self.reset_btn.clicked.connect(self.reset_sequencer)
-
         controls.addWidget(self.start_btn)
         controls.addWidget(self.stop_btn)
         controls.addWidget(self.reset_btn)
@@ -88,24 +85,21 @@ class SequencerGUI(QMainWindow):
         layout.addWidget(self.status_label)
 
         # Grid (tracks).
-        grid_group = QGroupBox("Sequencer Grid - Click to toggle notes")
+        grid_group = QGroupBox("Active Sequencer Display - Click or gesture to toggle notes.")
         grid_v = QVBoxLayout()
         grid_group.setLayout(grid_v)
-
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         grid_v.addWidget(scroll)
-
         grid_widget = QWidget()
         self.grid = QGridLayout(grid_widget)
         self.grid.setSpacing(4)
         scroll.setWidget(grid_widget)
-
         layout.addWidget(grid_group)
 
-        self.build_grid()
-
+        self.build_grid()                                      
         self.sequencer.step_signal.step_changed.connect(self.on_step_changed)
+        self.sequencer.step_signal.sequence_changed.connect(self.refresh_grid)
 
         # Initialization of display.
         self.refresh_grid()
@@ -116,8 +110,11 @@ class SequencerGUI(QMainWindow):
         self.timer.start(80)
 
     def build_grid(self):
+        
+        total_steps = self.sequencer.get_sequence_state()["total_steps"]
+
         self.grid.addWidget(QLabel("Gesture"), 0, 0)
-        for step in range(32):
+        for step in range(total_steps):
             lbl = QLabel(str(step))
             if step % 8 == 0:
                 lbl.setText(f"{step}\nM{step//8 + 1}")
@@ -126,7 +123,7 @@ class SequencerGUI(QMainWindow):
 
         for row, gesture in enumerate(GESTURES, 1):
             self.grid.addWidget(QLabel(gesture), row, 0)
-            for step in range(32):
+            for step in range(total_steps):
                 btn = QPushButton()
                 btn.setFixedSize(28, 28)
                 btn.setCheckable(True)
@@ -180,13 +177,14 @@ class SequencerGUI(QMainWindow):
             btn.setStyleSheet("background-color: #22c55e;" if has_note else "")
 
     def on_step_changed(self, actual_step):
-        visual_step = (actual_step + self.visual_offset) % 32
+        total_steps = self.sequencer.get_sequence_state()["total_steps"]
+        visual_step = (actual_step + self.visual_offset) % total_steps
         measure = (actual_step // 8) + 1
         self.status_label.setText(f"Step: {actual_step} | Measure: {measure} | BPM: {self.sequencer.bpm:.0f}")
 
-        # Visualization (sweeping bar).
+        # Visualization (sweeping bar) - single beat only
         for (gesture, s), btn in self.step_buttons.items():
-            if s == round(visual_step):                    # Rounding so that the visualization does not disappear.
+            if s == round(visual_step):
                 btn.setStyleSheet("background-color: #3b82f6; border: 3px solid #ffffff;")
             elif btn.isChecked():
                 btn.setStyleSheet("background-color: #22c55e;")

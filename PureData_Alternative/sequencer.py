@@ -1,7 +1,7 @@
 # PureData_Alternative/sequencer.py
 # Evan Acree | 4/1/26
 # TODO: Bugs -- delays on the order of -1.5, -0.5, 0.5, 1.5, ... cause note tracker to show on even beats only.
-#       Testing -- UNTESTED with MediaPipe and hand gestures.
+#       Testing -- WORKS with MediaPipe and hand gestures, but on the TEST (old) version. New version misplaces & overplaces frequently.
 
 import time                                     # Used for sleep, perf_counter.
 import threading                                # Used for running sequencer independently (in background) of GUI.
@@ -22,10 +22,8 @@ NOTE_DURATION_FACTOR = 0.95
 STEPS_PER_MEASURE = 8
 NUM_MEASURES = 4
 TOTAL_STEPS = STEPS_PER_MEASURE * NUM_MEASURES
-
 MIDI_CHANNEL = 0     # Channel number, which SuperCollider must use as well.
 VELOCITY = 100       # Volume (0-127, not important).
-
 
 # Mapping from gesture to MIDI note pitch.
 GESTURE_TO_NOTE = {
@@ -46,20 +44,23 @@ GESTURE_TO_NOTE = {
 # Mapping from MIDI note pitch to gesture.
 NOTE_TO_GESTURE = {v: k for k, v in GESTURE_TO_NOTE.items()}
 
-# CLASS: Used for communicating with GUI; tells GUI the current step has changed and what that step is.
+
+# CLASS: Used for communicating with GUI.
+#        Tells GUI the current step has changed and what that step is.
 class StepSignal(QObject):
-    step_changed = pyqtSignal(int)
+    step_changed = pyqtSignal(int)          # Fired every time the playhead moves
+    sequence_changed = pyqtSignal()         # Fired whenever a gesture toggles a note (so GUI updates instantly)
+
 
 # CLASS: Major sequencer class which contains all parameters & methods.
 class GestureSequencer:
-
     # METHOD: Sets initial conditions for Sequencer object, such as BPM, step count, etc
     def __init__(self):
         self.bpm = BPM                      # Tempo.
         self.running = False                # On/off status.
         self.current_step = 0               # Current step.
         self.sequence = [defaultdict(list) for _ in range(TOTAL_STEPS)] # Sequencer track structure.
-        self.track_pitches = {}             
+        self.track_pitches = {}            
         self.active_notes = {}
         self.midi_out = None
         self.midi_in = None
@@ -67,56 +68,56 @@ class GestureSequencer:
         self.midi_listener_thread = None
         self.last_step_time = 0
         self.step_signal = StepSignal()
-
+        self.last_gesture_time = {}         # ← NEW: Per-track debounce timer to stop gesture spam
         self._open_midi_ports()
 
+    # METHOD: Obtains & connects to the correct LoopMIDI I/O ports.
     def _open_midi_ports(self):
         input_ports = mido.get_input_names()
         output_ports = mido.get_output_names()
-
         print("Available MIDI Inputs :", input_ports)
         print("Available MIDI Outputs:", output_ports)
 
+        # Input port search based on MIDI_IN_BASE_NAME.
         self.midi_in = None
         for port in input_ports:
             if MIDI_IN_BASE_NAME in port:
                 try:
                     self.midi_in = mido.open_input(port)
-                    print(f"✅ MIDI Input connected → {port}")
+                    print(f"MIDI Input connected --> {port}")
                     break
                 except Exception as e:
-                    print(f"❌ Failed to open input {port}: {e}")
-
+                    print(f"Failed to open input {port}: {e}")
         if not self.midi_in:
-            print(f"❌ Could not find any port containing '{MIDI_IN_BASE_NAME}'")
-
+            print(f"Could not find any port containing '{MIDI_IN_BASE_NAME}'")
+        
+        # Output port search based on MIDI_OUT_BASE_NAME.
         self.midi_out = None
         for port in output_ports:
             if MIDI_OUT_BASE_NAME in port:
                 try:
                     self.midi_out = mido.open_output(port, autoreset=True)
-                    print(f"✅ MIDI Output connected → {port}")
+                    print(f"MIDI Output connected --> {port}")
                     break
                 except Exception as e:
-                    print(f"❌ Failed to open output {port}: {e}")
-
+                    print(f"Failed to open output {port}: {e}")
         if not self.midi_out:
-            print(f"❌ Could not find any port containing '{MIDI_OUT_BASE_NAME}'")
+            print(f"Could not find any port containing '{MIDI_OUT_BASE_NAME}'")
 
-        # Start MIDI listener if input was found
+        # Start MIDI listener (input loop) if input was found.
         if self.midi_in:
             self.midi_listener_thread = threading.Thread(target=self._midi_input_loop, daemon=True)
             self.midi_listener_thread.start()
 
-
+    # METHOD: Listens for note_on messages from MIDI input continuously.
     def _midi_input_loop(self):
-        while True:
+        while True: # Continuous.
             if self.midi_in:
-                for msg in self.midi_in.iter_pending():
-                    if msg.type == "note_on" and msg.velocity > 0:
-                        if msg.note in NOTE_TO_GESTURE:
-                            self.handle_gesture(NOTE_TO_GESTURE[msg.note])
-            time.sleep(0.001)
+                for msg in self.midi_in.iter_pending(): # Check if any MIDI messages have arrived.
+                    if msg.type == "note_on" and msg.velocity > 0: # Only care about note_on messages w/ nonzero volume.
+                        if msg.note in NOTE_TO_GESTURE: # If the note is a recognized gesture...
+                            self.handle_gesture(NOTE_TO_GESTURE[msg.note]) # Add it to the track.
+            time.sleep(0.001) # ~1kHz refresh rate.
 
     # METHOD: Sets BPM to a new value.
     def set_bpm(self, new_bpm: float):
@@ -148,7 +149,7 @@ class GestureSequencer:
         self.last_step_time = time.perf_counter()
         self.sequencer_thread = threading.Thread(target=self._sequencer_loop, daemon=True)
         self.sequencer_thread.start()
-        print("🎹 Sequencer STARTED")
+        print("Sequencer STARTED.")
 
     def stop(self):
         self.running = False
@@ -167,17 +168,16 @@ class GestureSequencer:
                 self.midi_out.send(mido.Message('note_off', note=notes, velocity=0, channel=MIDI_CHANNEL))
         self.active_notes.clear()
 
+    # METHOD: Runs the metronome, keeping time based on the current beat count and BPM.
     def _sequencer_loop(self):
         while self.running:
             step_duration = self.get_note_duration()
             now = time.perf_counter()
-
             if now - self.last_step_time >= step_duration:
                 self._process_step()
                 self.current_step = (self.current_step + 1) % TOTAL_STEPS
                 self.step_signal.step_changed.emit(self.current_step)
                 self.last_step_time = now
-
             time_to_next = step_duration - (now - self.last_step_time)
             if time_to_next > 0.005:
                 time.sleep(time_to_next - 0.003)
@@ -185,15 +185,14 @@ class GestureSequencer:
                 while (time.perf_counter() - self.last_step_time) < step_duration:
                     pass
 
+    # METHOD: Processes the current step, sending MIDI output (on, off) for active notes.
     def _process_step(self):
         if not self.midi_out:
             return
         step_data = self.sequence[self.current_step]
-
         for track_id in list(self.active_notes.keys()):
             if track_id not in step_data or not step_data[track_id]:
                 self._note_off_track(track_id)
-
         for track_id, notes in step_data.items():
             if notes:
                 self._note_on_track(track_id, notes)
@@ -215,13 +214,24 @@ class GestureSequencer:
             del self.active_notes[track_id]
 
     def handle_gesture(self, gesture: str):
+        """Called every time MediaPipe sends a gesture.
+           Now includes debounce so the same gesture can't spam the sequencer while the hand is held."""
         if gesture not in GESTURE_TO_NOTE:
             return
-        midi_note = GESTURE_TO_NOTE[gesture]
-        track_id = gesture
-        current_step = self.current_step
 
+        current_time = time.time()
+        track_id = gesture
+
+        # ← NEW DEBOUNCE: Ignore the same gesture if it was processed less than 250ms ago
+        if track_id in self.last_gesture_time and current_time - self.last_gesture_time[track_id] < 0.25:
+            return
+
+        self.last_gesture_time[track_id] = current_time
+
+        midi_note = GESTURE_TO_NOTE[gesture]
+        current_step = self.current_step
         track_notes = self.sequence[current_step][track_id]
+
         if midi_note in track_notes:
             track_notes.remove(midi_note)
             if not track_notes:
@@ -229,6 +239,9 @@ class GestureSequencer:
         else:
             track_notes.append(midi_note)
             self.track_pitches[track_id] = midi_note
+
+        # Tell GUI to refresh the grid immediately
+        self.step_signal.sequence_changed.emit()
 
     def get_sequence_state(self):
         return {
@@ -242,10 +255,9 @@ class GestureSequencer:
         }
 
 
-# ----- Launches and sets up GUI from QTGUI/src/main_TEST.py. -----
+# ----- Creates sequencer and sets up GUI from QTGUI/src/main_TEST.py. -----
 if __name__ == "__main__":
     seq = GestureSequencer()
-
     # Test pattern, remove eventually.
     for i in range(0, 8, 2):
         seq.add_note(i, "ok", 60)
