@@ -1,3 +1,4 @@
+#to run: py collect_data.py --label ok --samples 200
 import argparse
 import csv
 import os

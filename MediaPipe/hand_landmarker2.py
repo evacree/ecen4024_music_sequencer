@@ -32,18 +32,14 @@ default_n = 60
 notecount = 0
 
 GESTURE_TO_NOTE = {
-    "ok": 60,          #  major scale
-    "thumbs_up": 62,   # 
+    "ok": 60,          #  major scale   # 
     "one" : 64,
     "two" : 65,
     "three" : 67,
     "four" : 69,
     "five" : 71,
     "six" : 72, #end
-    "seven" : 76, #extra notes
-    "eight" : 78,
-    "nine" : 80,
-    "ten" : 82
+    "ten" : 62
 }
 
 
@@ -82,12 +78,12 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 500)
 mp_drawing = mp.solutions.drawing_utils 
 mp_hands = mp.solutions.hands
 hand = mp_hands.Hands(static_image_mode=False,
-    max_num_hands=2,
-    min_detection_confidence=0.4,
-    min_tracking_confidence=0.4)
+    max_num_hands=1,
+    min_detection_confidence=0.5,
+    min_tracking_confidence=0.5)
 
-STABLE_ON  = 4   #frames of a gesture before note turns on
-STABLE_OFF = 4   #frames w/o gesture for note to turn off
+STABLE_ON  = 2   #frames of a gesture before note turns on
+STABLE_OFF = 2   #frames w/o gesture for note to turn off
 
 candidate = None
 cand_count = 0
@@ -116,16 +112,14 @@ try:
             RGB_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) # RGB conversion
             result = hand.process(RGB_frame)
             right_ok_now = False
-            right_thumbs_now = False
+            
             right_one_now = False
             right_two_now = False
             right_three_now = False
             right_four_now = False
             right_five_now = False
             right_six_now = False
-            right_seven_now = False
-            right_eight_now = False
-            right_nine_now = False
+            
             right_ten_now = False
 
             if result.multi_hand_landmarks and result.multi_handedness:
@@ -145,8 +139,7 @@ try:
                     #print(f"{hand_label} = {gesture}")
                     if hand_label == 'Right' and gesture == 'ok':
                         right_ok_now = True
-                    if hand_label == 'Right' and gesture == 'thumbs_up':
-                        right_thumbs_now = True
+                    
                     if hand_label == 'Right' and gesture == 'one':
                         right_one_now = True
                     if hand_label == 'Right' and gesture == 'two':
@@ -159,22 +152,14 @@ try:
                         right_five_now = True
                     if hand_label == 'Right' and gesture == 'six':
                         right_six_now = True
-                    if hand_label == 'Right' and gesture == 'seven':
-                        right_seven_now = True
-                    if hand_label == 'Right' and gesture == 'eight':
-                        right_eight_now = True
-                    if hand_label == 'Right' and gesture == 'nine':
-                        right_nine_now = True
+                    
                     if hand_label == 'Right' and gesture == 'ten':
                         right_ten_now = True
 
-                    else:
-                        print()
+                    
 
-                    mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
             active_gesture = None
-            if right_thumbs_now:
-                active_gesture = "thumbs_up"
+            
             if right_ok_now:
                 active_gesture = "ok"
             if right_one_now:
@@ -189,12 +174,7 @@ try:
                 active_gesture = "five"
             if right_six_now:
                 active_gesture = "six"
-            if right_seven_now:
-                active_gesture = "seven"
-            if right_eight_now:
-                active_gesture = "eight"
-            if right_nine_now:
-                active_gesture = "nine"
+            
             if right_ten_now:
                 active_gesture = "ten"
 
@@ -283,7 +263,6 @@ try:
             cv2.imshow("capture image", frame)
             if cv2.waitKey(1) == ord('q'): # press q to quit
                 break
-            time.sleep(0.005)
 
 finally:
     # executed on close
