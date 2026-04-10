@@ -2,6 +2,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from uiconcept import Ui_MainWindow
 from main_TEST import GESTURES, GESTURE_TO_NOTE
 from main import CameraWorker   # you may rename main.py → camera.py
+from PyQt6.QtCore import pyqtSlot
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, sequencer):
@@ -74,7 +75,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 "background-color: #22c55e;" if has_note else ""
             )
 
-    @QtCore.Slot(int) # Play visual animation
+    @pyqtSlot(int) # Play visual animation
     def on_step_changed(self, actual_step): # Moving blue play-ahead
         visual_step = (actual_step + self.visual_offset) % len(self.sequencer.sequence)
         measure = (actual_step // 8) + 1
@@ -83,7 +84,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         for (gesture, s), btn in self.step_buttons.items():
             if s == round(visual_step):
-                btn.setStyleSheet("backgound-color: #3b82f6; border: 3px solid #ffffff;")
+                btn.setStyleSheet("background-color: #3b82f6; border: 3px solid #ffffff;")
             elif btn.isChecked():
                 btn.setStyleSheet("background-color: #22c55e;")
             else:
@@ -125,10 +126,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.videoLabel = QtWidgets.QLabel(self.graphicsView)
         self.videoLabel.setGeometry(self.graphicsView.rect())
-        self.videoLabel.setAlignment(QtCore.Qt.AlignmentFlag.QAlignCenter)
+        self.videoLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
-        self = QtCore.QThread(self)
-        self = CameraWorker(camera_index=0, model=self.model)
+        self.thread = QtCore.QThread(self)
+        self.worker = CameraWorker(camera_index=0, model=self.model)
         self.worker.moveToThread(self.thread)
 
         self.thread.started.connect(self.worker.process)
@@ -141,16 +142,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.thread.start()
 
-    @QtCore.Slot(QtGui.QImage)
+    @pyqtSlot(QtGui.QImage)
     def on_frame_ready(self, qimg):
         pix = QtGui.QPixmap.fromImage(qimg)
         self.videoLabel.setPixmap(pix)
 
-    @QtCore.Slot(str)
+    @pyqtSlot(str)
     def on_gesture_ready(self, gesture):
         print(f"Gesture: {gesture}")
 
-    @QtCore.Slot(str)
+    @pyqtSlot(str)
     def on_error(self, message):
         print(message)
 
@@ -165,16 +166,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.sequencer.midi_out.close()
         event.accept()
 
+
+from main_TEST import SequencerGUI
+
 if __name__ == "__main__":
     import sys
-    from main_TEST import SequencerGUI
-
     app = QtWidgets.QApplication(sys.argv)
 
-    sequencer = SequencerGUI()
+    sequencer = SequencerGUI.start_sequencer()
     window = MainWindow(sequencer)
     window.show()
 
-    sys.exit(app.exec)
+    sys.exit(app.exec())
 
 
