@@ -87,7 +87,7 @@ class CameraWorker(QObject):
 
                 rgb_out = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 h, w, ch = rgb_out.shape
-                qimg = QImage(rgb_out.data, w, h, ch * w, QImage.Format_RGB888).copy()
+                qimg = QImage(rgb_out.data, w, h, ch * w, QImage.Format.Format_RGB888).copy()
 
                 self.frame_ready.emit(qimg)
                 self.gesture_ready.emit(active_gesture)
