@@ -113,7 +113,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def _toggle_start_stop(self):
         if self.sequencer.running:
             self.sequencer.stop()
-            self.pushButton33.setText("Start")
+            self.pushButton_33.setText("Start")
         else:
             self.sequencer.start()
             self.pushButton_33.setText("Stop")
