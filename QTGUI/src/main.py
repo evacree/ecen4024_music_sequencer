@@ -1,8 +1,8 @@
-from PySide6.QtWidgets import *
-# from PySide6 import QtWidgets, QHBoxLayout
-from PySide6.QtWidgets import QHBoxLayout
-from PySide6.QtCore import Qt, QTimer, QThread, QObject, Signal, Slot
-from PySide6.QtGui import QImage, QPixmap
+from PyQt6.QtWidgets import *
+# from PyQt6 import QtWidgets, QHBoxLayout
+from PyQt6.QtWidgets import QHBoxLayout
+from PyQt6.QtCore import Qt, QTimer, QThread, QObject, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QImage, QPixmap
 import cv2
 import mediapipe as mp
 from mediapipe import solutions
@@ -13,10 +13,10 @@ from mediapipe.tasks.python import vision
 
 class CameraWorker(QObject):
     """Worker to execute camera background tasks"""
-    frame_ready = Signal(QImage)
-    gesture_ready = Signal(str)
-    error = Signal(str)
-    finished = Signal()
+    frame_ready = pyqtSignal(QImage)
+    gesture_ready = pyqtSignal(str)
+    error = pyqtSignal(str)
+    finished = pyqtSignal()
 
     def __init__(self, camera_index=0, model=None):
         super(). __init__()
@@ -24,7 +24,7 @@ class CameraWorker(QObject):
         self.model = model
         self.running = False
 
-    @Slot()
+    @pyqtSlot()
     def process(self):
         self.running = True
         cap = cv2.VideoCapture(self.camera_index)
@@ -95,7 +95,7 @@ class CameraWorker(QObject):
         cap.release()
         self.finished.emit()
 
-    @Slot()
+    @pyqtSlot()
     def stop(self):
         self.running = False
 
@@ -173,17 +173,17 @@ class MainWindow(QMainWindow):
         self.thread.start()
 
 
-    @Slot(QImage)
+    @pyqtSlot(QImage)
     def on_frame_ready(self, qimg):
         pix = QPixmap.fromImage(qimg)
         self.video_label.setPixmap(pix)
 
-    @Slot(str)
+    @pyqtSlot(str)
     def on_gesture_ready(self, gesture):
         print(f"Gesture: {gesture}")
         # pass
     
-    @Slot(str)
+    @pyqtSlot(str)
     def on_error(self, message):
         print(message)
 

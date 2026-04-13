@@ -102,13 +102,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             lambda v: self.sequencer.set_bpm(float(v))
         )
 
-        self.pushButton33.clicked.connect(self._toggle_start_stop)
+        self.pushButton_33.clicked.connect(self._toggle_start_stop)
                 
         # Track checkboxes can act as mutes
         self.checkBox.toggled.connect(lambda state: self._set_track_enabled(0, state))
-        self.checkBox2.toggled.connect(lambda state: self._set_track_enabled(1, state))
-        self.checkBox3.toggled.connect(lambda state: self._set_track_enabled(2, state))
-        self.checkBox4.toggled.connect(lambda state: self._set_track_enabled(3, state))
+        self.checkBox_2.toggled.connect(lambda state: self._set_track_enabled(1, state))
+        self.checkBox_3.toggled.connect(lambda state: self._set_track_enabled(2, state))
+        self.checkBox_4.toggled.connect(lambda state: self._set_track_enabled(3, state))
 
     def _toggle_start_stop(self):
         if self.sequencer.running:
@@ -116,7 +116,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.pushButton33.setText("Start")
         else:
             self.sequencer.start()
-            self.pushButton33.setText("Stop")
+            self.pushButton_33.setText("Stop")
 
     def _set_track_enabled(self, track_index, enabled):
         self.sequencer.set_track_enabled(track_index, enabled)
