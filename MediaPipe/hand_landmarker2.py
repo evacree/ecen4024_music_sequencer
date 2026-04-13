@@ -28,10 +28,6 @@ PORT_NAME = "MediaPipe_to_PureData 1"
 MIDI_CH   = 0      #channel
 VEL       = 100   #volume
 
-n = 60
-default_n = 60
-notecount = 0
-
 GESTURE_TO_NOTE = {
     "ok": 60,          #  major scale   # 
     "one" : 64,
@@ -40,7 +36,7 @@ GESTURE_TO_NOTE = {
     "four" : 69,
     "five" : 71,
     "six" : 72, #end
-    "ten" : 62
+    "fist" : 62
 }
 
 
@@ -83,8 +79,8 @@ hand = mp_hands.Hands(static_image_mode=False,
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5)
 
-STABLE_ON  = 2   #frames of a gesture before note turns on
-STABLE_OFF = 2   #frames w/o gesture for note to turn off
+STABLE_ON  = 4   #frames of a gesture before note turns on
+STABLE_OFF = 4   #frames w/o gesture for note to turn off
 
 candidate = None
 cand_count = 0
@@ -121,7 +117,7 @@ try:
             right_five_now = False
             right_six_now = False
             
-            right_ten_now = False
+            right_fist_now = False
 
             if result.multi_hand_landmarks and result.multi_handedness:
                 h, w = frame.shape[:2]
@@ -136,8 +132,12 @@ try:
                     wrist = hand_landmarks.landmark[0]
                     px, py = int(wrist.x * w), int(wrist.y * h)
 
-                    cv2.putText(frame, f"{hand_label}: {gesture}", (px, py -10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                    #print(f"{hand_label} = {gesture}")
+                    text = f"{gesture}: {target_note}"
+                    (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
+                    x = frame.shape[1] - text_width - 10
+                    y = frame.shape[0] - 10
+                    cv2.putText(frame, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+                    
                     if hand_label == 'Right' and gesture == 'ok':
                         right_ok_now = True
                     
@@ -154,8 +154,8 @@ try:
                     if hand_label == 'Right' and gesture == 'six':
                         right_six_now = True
                     
-                    if hand_label == 'Right' and gesture == 'ten':
-                        right_ten_now = True
+                    if hand_label == 'Right' and gesture == 'fist':
+                        right_fist_now = True
 
                     
 
@@ -176,18 +176,16 @@ try:
             if right_six_now:
                 active_gesture = "six"
             
-            if right_ten_now:
-                active_gesture = "ten"
+            if right_fist_now:
+                active_gesture = "fist"
 
             target_note = GESTURE_TO_NOTE.get(active_gesture)  
 
             if target_note != current_note:
                 if current_note is not None:
                     note_off(current_note)
-                   # print(f"NOTE OFF {current_note}")
                 if target_note is not None:
                     note_on(target_note)
-                   # print(f"NOTE ON {target_note} ({active_gesture})")
                 current_note = target_note
             
             if active_gesture == candidate:
@@ -223,16 +221,11 @@ try:
                 # OFF
                 if last_stable_gesture is not None and stable_gesture is None:
                     # you only become None after none_count >= STABLE_OFF
-                    #print(f"[OFF] {last_stable_gesture} detected in {STABLE_OFF} frames (was ON for {stable_on_duration} frames)")
                     stable_on_duration = 0
 
                 # ON transition
                 if last_stable_gesture is None and stable_gesture is not None:
-                   
-                  #print(f"[ON ] {stable_gesture} detected in {STABLE_ON} frames")
-                  print()
-
-                last_stable_gesture = stable_gesture
+                    last_stable_gesture = stable_gesture
 
 
 
@@ -244,20 +237,6 @@ try:
                 if target_note is not None:
                     note_on(target_note)
                 current_note = target_note
-
-
-                if hand_label == 'Left' and gesture == 'ok':
-                    notecount += 1
-                    if notecount >= 15:  # half second - 30 fps 
-                        n += 1
-                        cv2.putText(frame, f"n: {n}", (px, py -50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                        print(n)
-                        notecount = 0
-
-                if hand_label == 'Left' and gesture == 'thumbs_up':
-                    n = default_n
-                    cv2.putText(frame, f"n: {n}", (px, py -50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                    print(n)
                             
 
             
@@ -282,12 +261,4 @@ outport.send(mido.Message('note_off', note=current_note, velocity=0, channel=MID
 outport.close()
 cap.release()
 cv2.destroyAllWindows()    
-
-#gesture list:
-#
-#ok
-#thumbs_up
-#1-10
-
-#more data samples
 
