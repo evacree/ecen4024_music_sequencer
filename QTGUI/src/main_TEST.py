@@ -1,12 +1,19 @@
 # QTGUI/src/main_TEST.py
-# Evan Acree | 4/1/26
+# Evan Acree | 4/13/26
 import sys
+import cv2
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QGridLayout, QPushButton, QLabel, QSpinBox, QGroupBox, QScrollArea,
     QSlider
 )
-from PyQt6.QtCore import QTimer, Qt
+from PyQt6.QtCore import QTimer, Qt, QThread, pyqtSignal
+from PyQt6.QtGui import QImage, QPixmap
+import os
+import mido
+import warnings
+
+warnings.filterwarnings("ignore", category=UserWarning)
 
 GESTURES = ["ok", "thumbs_up", "one", "two", "three", "four",
             "five", "six", "seven", "eight", "nine", "ten"]
@@ -16,6 +23,74 @@ GESTURE_TO_NOTE = {
     "four": 69, "five": 71, "six": 72, "seven": 76, "eight": 78,
     "nine": 80, "ten": 82
 }
+
+
+class CameraWorker(QThread):
+    frame_ready = pyqtSignal(QImage)
+    gesture_ready = pyqtSignal(str)
+    error = pyqtSignal(str)
+
+    def __init__(self, camera_index=0):
+        super().__init__()
+        self.camera_index = camera_index
+        self.running = True
+        self.cap = None
+
+    def run(self):
+        try:
+            # Load your model
+            MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "MediaPipe", "gesture_model.pkl")
+            with open(MODEL_PATH, "rb") as f:
+                data = pickle.load(f)   # load MediaPipe model.
+
+            import mediapipe as mp
+            mp_hands = mp.solutions.hands
+            hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1,
+                                   min_detection_confidence=0.5, min_tracking_confidence=0.5)
+            mp_draw = mp.solutions.drawing_utils
+
+            self.cap = cv2.VideoCapture(self.camera_index, cv2.CAP_DSHOW)
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+
+            while self.running and self.cap.isOpened():
+                success, frame = self.cap.read()
+                if not success:
+                    continue
+
+                frame = cv2.flip(frame, 1)
+                rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                result = hands.process(rgb)
+
+                gesture = None
+                if result.multi_hand_landmarks:
+                    for hand_landmarks in result.multi_hand_landmarks:
+                        mp_draw.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+                        # Get gesture from MediaPipe model
+                        coords = []
+                        for lm in hand_landmarks.landmark:
+                            coords.extend([lm.x, lm.y, lm.z])
+                        gesture = data.predict([coords])[0]
+
+                # Send frame to GUI
+                rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                h, w, ch = rgb_image.shape
+                qt_image = QImage(rgb_image.data, w, h, ch * w, QImage.Format.Format_RGB888)
+                self.frame_ready.emit(qt_image)
+
+                # Send gesture to sequencer
+                if gesture:
+                    self.gesture_ready.emit(gesture)
+
+        except Exception as e:
+            self.error.emit(str(e))
+        finally:
+            if self.cap:
+                self.cap.release()
+
+    def stop(self):
+        self.running = False
+        self.wait()
 
 
 def launch_gui(sequencer):
@@ -30,46 +105,47 @@ class SequencerGUI(QMainWindow):
         super().__init__()
         self.sequencer = sequencer
         self.step_buttons = {}
-        self.visual_offset = -0.7      # Tuneable on GUI for now.
+        self.visual_offset = -0.7
 
         self.setWindowTitle("Hand Gesture Music Sequencer")
-        self.setGeometry(100, 100, 1350, 780)
+        self.setGeometry(100, 100, 1550, 820)
 
         central = QWidget()
         self.setCentralWidget(central)
-        layout = QVBoxLayout(central)
+        main_layout = QHBoxLayout(central)
 
-        # Controls.
+        # LEFT PANEL
+        left_panel = QVBoxLayout()
+        main_layout.addLayout(left_panel, stretch=2)
+
         controls = QHBoxLayout()
-        layout.addLayout(controls)
+        left_panel.addLayout(controls)
 
-        # BPM select.
         bpm_group = QGroupBox("BPM")
         bpm_layout = QHBoxLayout()
         self.bpm_spin = QSpinBox()
         self.bpm_spin.setRange(20, 300)
         self.bpm_spin.setValue(int(self.sequencer.bpm))
+        self.bpm_spin.setMinimumWidth(90)
         self.bpm_spin.valueChanged.connect(self.change_bpm)
         bpm_layout.addWidget(QLabel("BPM:"))
         bpm_layout.addWidget(self.bpm_spin)
         bpm_group.setLayout(bpm_layout)
         controls.addWidget(bpm_group)
 
-        # Visual offset (delay) slider.
-        offset_group = QGroupBox("Audio-Visual Offset")
+        offset_group = QGroupBox("Visual Offset")
         offset_layout = QHBoxLayout()
         self.offset_slider = QSlider(Qt.Orientation.Horizontal)
         self.offset_slider.setRange(-40, 40)
         self.offset_slider.setValue(int(self.visual_offset * 10))
         self.offset_slider.valueChanged.connect(self.change_offset)
         self.offset_label = QLabel(f"Offset: {self.visual_offset:.1f}")
-        offset_layout.addWidget(QLabel("Visual Offset:"))
+        offset_layout.addWidget(QLabel("Offset:"))
         offset_layout.addWidget(self.offset_slider)
         offset_layout.addWidget(self.offset_label)
         offset_group.setLayout(offset_layout)
         controls.addWidget(offset_group)
 
-        # Start/stop/reset.
         self.start_btn = QPushButton("▶ Start")
         self.stop_btn = QPushButton("⏹ Stop")
         self.reset_btn = QPushButton("Reset All")
@@ -82,10 +158,9 @@ class SequencerGUI(QMainWindow):
 
         self.status_label = QLabel("Step: 0 | Measure: 1")
         self.status_label.setStyleSheet("font-size: 16px; font-weight: bold;")
-        layout.addWidget(self.status_label)
+        left_panel.addWidget(self.status_label)
 
-        # Grid (tracks).
-        grid_group = QGroupBox("Active Sequencer Display - Click or gesture to toggle notes.")
+        grid_group = QGroupBox("Sequencer Grid - Click or gesture to toggle notes")
         grid_v = QVBoxLayout()
         grid_group.setLayout(grid_v)
         scroll = QScrollArea()
@@ -95,13 +170,28 @@ class SequencerGUI(QMainWindow):
         self.grid = QGridLayout(grid_widget)
         self.grid.setSpacing(4)
         scroll.setWidget(grid_widget)
-        layout.addWidget(grid_group)
+        left_panel.addWidget(grid_group)
 
-        self.build_grid()                                      
+        # RIGHT PANEL - CAMERA
+        right_panel = QVBoxLayout()
+        main_layout.addLayout(right_panel, stretch=1)
+
+        camera_group = QGroupBox("Live Hand Tracking")
+        camera_layout = QVBoxLayout()
+        camera_group.setLayout(camera_layout)
+
+        self.videoLabel = QLabel()
+        self.videoLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.videoLabel.setMinimumSize(640, 480)
+        self.videoLabel.setStyleSheet("background-color: black; border: 1px solid #555;")
+        camera_layout.addWidget(self.videoLabel)
+        right_panel.addWidget(camera_group)
+
+        # Build UI
+        self.build_grid()
         self.sequencer.step_signal.step_changed.connect(self.on_step_changed)
         self.sequencer.step_signal.sequence_changed.connect(self.refresh_grid)
 
-        # Initialization of display.
         self.refresh_grid()
         self.on_step_changed(0)
 
@@ -109,10 +199,11 @@ class SequencerGUI(QMainWindow):
         self.timer.timeout.connect(self.update_status)
         self.timer.start(80)
 
-    def build_grid(self):
-        
-        total_steps = self.sequencer.get_sequence_state()["total_steps"]
+        # Start camera
+        self._init_camera_thread()
 
+    def build_grid(self):
+        total_steps = self.sequencer.get_sequence_state()["total_steps"]
         self.grid.addWidget(QLabel("Gesture"), 0, 0)
         for step in range(total_steps):
             lbl = QLabel(str(step))
@@ -182,7 +273,6 @@ class SequencerGUI(QMainWindow):
         measure = (actual_step // 8) + 1
         self.status_label.setText(f"Step: {actual_step} | Measure: {measure} | BPM: {self.sequencer.bpm:.0f}")
 
-        # Visualization (sweeping bar) - single beat only
         for (gesture, s), btn in self.step_buttons.items():
             if s == round(visual_step):
                 btn.setStyleSheet("background-color: #3b82f6; border: 3px solid #ffffff;")
@@ -194,8 +284,137 @@ class SequencerGUI(QMainWindow):
     def update_status(self):
         pass
 
+    def _init_camera_thread(self):
+        self.camera_thread = QThread(self)
+        self.camera_worker = CameraWorker(camera_index=0)
+        self.camera_worker.moveToThread(self.camera_thread)
+
+        self.camera_thread.started.connect(self.camera_worker.start)
+        self.camera_worker.frame_ready.connect(self.on_frame_ready)
+        self.camera_worker.gesture_ready.connect(self.on_gesture_ready)
+        self.camera_worker.error.connect(lambda msg: print("Camera Error:", msg))
+
+        self.camera_thread.start()
+
+    def on_frame_ready(self, qimage):
+        pixmap = QPixmap.fromImage(qimage)
+        scaled = pixmap.scaled(self.videoLabel.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        self.videoLabel.setPixmap(scaled)
+
+    def on_gesture_ready(self, gesture):
+        print(f"Gesture received: {gesture}")
+        if hasattr(self.sequencer, 'handle_gesture'):
+            self.sequencer.handle_gesture(gesture)
+
     def closeEvent(self, event):
+        if hasattr(self, "camera_worker"):
+            self.camera_worker.stop()
+        if hasattr(self, "camera_thread"):
+            self.camera_thread.quit()
+            self.camera_thread.wait(1000)
         self.sequencer.stop()
         if self.sequencer.midi_out:
             self.sequencer.midi_out.close()
         event.accept()
+
+
+# ==================== CAMERA WORKER (MediaPipe) ====================
+class CameraWorker(QThread):
+    frame_ready = pyqtSignal(QImage)
+    gesture_ready = pyqtSignal(str)   # Only emitted when gesture is stable.
+    error = pyqtSignal(str)
+
+    def __init__(self, camera_index=0):
+        super().__init__()
+        self.camera_index = camera_index
+        self.running = True
+
+        self.STABLE_ON = 4      # frames needed to confirm a gesture
+        self.STABLE_OFF = 4     # frames needed to confirm gesture release
+
+        self.candidate = None
+        self.cand_count = 0
+        self.stable_gesture = None
+        self.none_count = 0
+
+    def run(self):
+        try:
+            import pickle
+            MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "MediaPipe", "gesture_model.pkl")
+            with open(MODEL_PATH, "rb") as f:
+                model = pickle.load(f)
+
+            import mediapipe as mp
+            mp_hands = mp.solutions.hands
+            hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1,
+                                   min_detection_confidence=0.5, min_tracking_confidence=0.5)
+            mp_draw = mp.solutions.drawing_utils
+
+            cap = cv2.VideoCapture(self.camera_index, cv2.CAP_DSHOW)
+            cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+
+            while self.running and cap.isOpened():
+                success, frame = cap.read()
+                if not success:
+                    continue
+
+                frame = cv2.flip(frame, 1)
+                rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                results = hands.process(rgb)
+
+                active_gesture = None
+
+                if results.multi_hand_landmarks:
+                    for hand_landmarks in results.multi_hand_landmarks:
+                        mp_draw.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+
+                        coords = []
+                        for lm in hand_landmarks.landmark:
+                            coords.extend([lm.x, lm.y, lm.z])
+                        detected = model.predict([coords])[0]
+
+                        # Map detected gesture
+                        if detected == "ok":
+                            active_gesture = "ok"
+                        elif detected == "thumbs_up":
+                            active_gesture = "thumbs_up"
+                        elif detected == "one":
+                            active_gesture = "one"
+                        elif detected == "two":
+                            active_gesture = "two"
+                        # ... add the rest of your gestures if needed
+
+                # === STABILITY FILTER (prevents spam) ===
+                if active_gesture == self.candidate:
+                    self.cand_count += 1
+                else:
+                    self.candidate = active_gesture
+                    self.cand_count = 1
+
+                if self.candidate is None:
+                    self.none_count += 1
+                    if self.none_count >= self.STABLE_OFF:
+                        self.stable_gesture = None
+                else:
+                    self.none_count = 0
+                    if self.cand_count >= self.STABLE_ON:
+                        if self.stable_gesture != self.candidate:
+                            self.stable_gesture = self.candidate
+                            self.gesture_ready.emit(self.stable_gesture) 
+
+                # Send frame to GUI
+                rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                h, w, ch = rgb_image.shape
+                qt_image = QImage(rgb_image.data, w, h, ch * w, QImage.Format.Format_RGB888)
+                self.frame_ready.emit(qt_image)
+
+        except Exception as e:
+            self.error.emit(str(e))
+        finally:
+            if 'cap' in locals():
+                cap.release()
+
+    def stop(self):
+        self.running = False
+        self.wait()
