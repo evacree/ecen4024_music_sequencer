@@ -2,7 +2,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from uiconcept import Ui_MainWindow
 from main_TEST import GESTURES, GESTURE_TO_NOTE
 from main import CameraWorker   # you may rename main.py → camera.py
-from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtCore import pyqtSlot, QObject, QTimer, pyqtSignal
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, sequencer):
@@ -167,16 +167,76 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         event.accept()
 
 
+class StepSignal(QObject):
+    step_changed = pyqtSignal(int)
+
+class DummySequencer:
+    def __init__(self, steps=32):
+        super().__init__()
+        self.bpm = 120.0
+        self.steps = steps
+        self.sequence = [{g: [] for g in GESTURES} for _ in range(8)]
+        self.track_pitches = {}
+        self.current_step = 0
+
+        from PyQt6.QtCore import QObject, pyqtSignal
+
+        self.step_signal = StepSignal()
+        self.running = False
+
+        self._timer = QTimer()
+        self._timer.timeout.connect(self._advance_step)
+        self._update_timer_interval()
+
+        self.midi_out = None
+
+    def set_bpm(self, bpm: float):
+        self.bpm = max(1.0, float(bpm))
+        self._update_timer_interval()
+
+    def start(self):
+        if self.running:
+            return
+        self.running = True
+        self._timer.start()
+
+    def stop(self):
+        if not self.running:
+            return
+        self.running = False
+        self._timer.stop()
+
+    def set_track_enabled(self, track_index, enabled: bool):
+        pass
+
+    def clear_all(self):
+        for step in self.sequence:
+            for g in step:
+                step[g].clear()
+        self.track_pitches.clear()
+        self.current_step = 0
+        self.step_signal.step_changed.emit(self.current_step)
+
+    def _update_timer_interval(self):
+        ms_per_step = (60_000 / self.bpm) / 4.0
+        self._timer.setInterval(int(ms_per_step))
+
+    def _advance_step(self):
+        if not self.running:
+            return
+        self.current_step = (self.current_step + 1) % self.steps
+
+
+        self.step_signal.step_changed.emit(self.current_step)
+
 from main_TEST import SequencerGUI
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
 
-    sequencer = SequencerGUI.start_sequencer()
+    sequencer = DummySequencer(steps=32)
     window = MainWindow(sequencer)
     window.show()
 
     sys.exit(app.exec())
-
-
