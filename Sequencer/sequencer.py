@@ -1,4 +1,4 @@
-# PureData_Alternative/sequencer.py
+# Sequencer/sequencer.py
 # Evan Acree | 4/1/26
 # TODO: Bugs -- delays on the order of -1.5, -0.5, 0.5, 1.5, ... cause note tracker to show on even beats only.
 #       Testing -- WORKS with MediaPipe and hand gestures, but on the TEST (old) version. New version misplaces & overplaces frequently.

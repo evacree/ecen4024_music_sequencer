@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import time
 import mido
+import os
 import warnings
 warnings.filterwarnings(
     "ignore",
@@ -64,7 +65,7 @@ def safe_note_off(outport, note, ch):
     outport.send(mido.Message('note_off', note=note, velocity=0, channel=ch))
 
 
-MODEL_PATH = "gesture_model.pkl"
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "gesture_model.pkl")
 
 with open(MODEL_PATH, "rb") as f:
     data = pickle.load(f)
