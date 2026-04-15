@@ -15,13 +15,28 @@ import warnings
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
-GESTURES = ["ok", "thumbs_up", "one", "two", "three", "four",
-            "five", "six", "seven", "eight", "nine", "ten"]
+GESTURES = ["ok", "fist", "one", "two", "three", "four", "five", "six"]
 
 GESTURE_TO_NOTE = {
-    "ok": 60, "thumbs_up": 62, "one": 64, "two": 65, "three": 67,
-    "four": 69, "five": 71, "six": 72, "seven": 76, "eight": 78,
-    "nine": 80, "ten": 82
+    "ok": 60,          #  major scale   # 
+    "one" : 64,
+    "two" : 65,
+    "three" : 67,
+    "four" : 69,
+    "five" : 71,
+    "six" : 72, #end
+    "fist" : 62
+}
+
+MIDI_TO_NOTE = {
+    60: "C4",
+    62: "D4",
+    64: "E4",
+    65: "F4",
+    67: "G4",
+    69: "A4",
+    71: "B4",
+    72: "C5"
 }
 
 
@@ -302,7 +317,6 @@ class SequencerGUI(QMainWindow):
         self.videoLabel.setPixmap(scaled)
 
     def on_gesture_ready(self, gesture):
-        print(f"Gesture received: {gesture}")
         if hasattr(self.sequencer, 'handle_gesture'):
             self.sequencer.handle_gesture(gesture)
 
@@ -374,6 +388,15 @@ class CameraWorker(QThread):
                             coords.extend([lm.x, lm.y, lm.z])
                         detected = model.predict([coords])[0]
 
+                        midi2note = MIDI_TO_NOTE.get(GESTURE_TO_NOTE.get(detected), "Unknown")
+                        mp_draw.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+
+                        text = f"{detected}: {midi2note}"
+                        (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_COMPLEX, 1, 2)
+                        x = frame.shape[1] - text_width - 10
+                        y = frame.shape[0] - 10
+                        cv2.putText(frame, text, (x, y), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+
                         # Map detected gesture
                         if detected == "ok":
                             active_gesture = "ok"
@@ -383,7 +406,17 @@ class CameraWorker(QThread):
                             active_gesture = "one"
                         elif detected == "two":
                             active_gesture = "two"
-                        # ... add the rest of your gestures if needed
+                        elif detected == "three":
+                            active_gesture = "three"
+                        elif detected == "four":
+                            active_gesture = "four"
+                        elif detected == "five":
+                            active_gesture = "five"
+                        elif detected == "six":
+                            active_gesture = "six"
+                        elif detected == "fist":
+                            active_gesture = "fist"
+
 
                 # === STABILITY FILTER (prevents spam) ===
                 if active_gesture == self.candidate:

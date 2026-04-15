@@ -39,10 +39,18 @@ GESTURE_TO_NOTE = {
     "fist" : 62
 }
 
-
+MIDI_TO_NOTE = {
+    60: "C4",
+    62: "D4",
+    64: "E4",
+    65: "F4",
+    67: "G4",
+    69: "A4",
+    71: "B4",
+    72: "C5"
+}
 
 outport = mido.open_output(PORT_NAME)
-#print(mido.get_output_names())
 
 def midi_panic(outport):#in case of crash
     
@@ -89,16 +97,6 @@ stable_gesture = None
 none_count = 0
 current_note = None
 
-#latency tracking
-pending_on_label = None
-pending_on_frames = 0
-
-pending_off_frames = 0
-last_stable_gesture = None
-
-stable_on_duration = 0  # how long the confirmed gesture stayed ON (frames)
-
-
 #loop
 try:
 
@@ -132,11 +130,14 @@ try:
                     wrist = hand_landmarks.landmark[0]
                     px, py = int(wrist.x * w), int(wrist.y * h)
 
-                    text = f"{gesture}: {target_note}"
-                    (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
+                    midi2note = MIDI_TO_NOTE.get(GESTURE_TO_NOTE.get(gesture), "Unknown")
+                    mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+
+                    text = f"{gesture}: {midi2note}"
+                    (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_COMPLEX, 1, 2)
                     x = frame.shape[1] - text_width - 10
                     y = frame.shape[0] - 10
-                    cv2.putText(frame, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+                    cv2.putText(frame, text, (x, y), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
                     
                     if hand_label == 'Right' and gesture == 'ok':
                         right_ok_now = True
@@ -203,30 +204,6 @@ try:
                 none_count = 0
                 if cand_count >= STABLE_ON:
                     stable_gesture = candidate
-
-            #latency tracking again
-
-            #ON
-            if stable_gesture is None:
-                
-                pending_on_label = candidate
-                pending_on_frames = cand_count if candidate is not None else 0
-            else:
-        
-                stable_on_duration += 1
-
-            
-            if stable_gesture != last_stable_gesture:
-
-                # OFF
-                if last_stable_gesture is not None and stable_gesture is None:
-                    # you only become None after none_count >= STABLE_OFF
-                    stable_on_duration = 0
-
-                # ON transition
-                if last_stable_gesture is None and stable_gesture is not None:
-                    last_stable_gesture = stable_gesture
-
 
 
             target_note = GESTURE_TO_NOTE.get(stable_gesture)
