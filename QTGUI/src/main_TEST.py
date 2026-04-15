@@ -18,14 +18,14 @@ warnings.filterwarnings("ignore", category=UserWarning)
 GESTURES = ["ok", "fist", "one", "two", "three", "four", "five", "six"]
 
 GESTURE_TO_NOTE = {
-    "ok": 60,          #  major scale   # 
+    "ok": 60, 
+    "fist" : 62,         #  major scale   # 
     "one" : 64,
     "two" : 65,
     "three" : 67,
     "four" : 69,
     "five" : 71,
-    "six" : 72, #end
-    "fist" : 62
+    "six" : 72 #end
 }
 
 MIDI_TO_NOTE = {
@@ -390,6 +390,7 @@ class CameraWorker(QThread):
 
                         midi2note = MIDI_TO_NOTE.get(GESTURE_TO_NOTE.get(detected), "Unknown")
                         mp_draw.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+                        wrist = hand_landmarks.landmark[0]
 
                         text = f"{detected}: {midi2note}"
                         (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_COMPLEX, 1, 2)
@@ -398,23 +399,23 @@ class CameraWorker(QThread):
                         cv2.putText(frame, text, (x, y), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
                         # Map detected gesture
-                        if detected == "ok":
+                        if detected == "ok" and wrist.x > 0.5:
                             active_gesture = "ok"
-                        elif detected == "thumbs_up":
+                        elif detected == "thumbs_up" and wrist.x > 0.5:
                             active_gesture = "thumbs_up"
-                        elif detected == "one":
+                        elif detected == "one" and wrist.x > 0.5:
                             active_gesture = "one"
-                        elif detected == "two":
+                        elif detected == "two" and wrist.x > 0.5:
                             active_gesture = "two"
-                        elif detected == "three":
+                        elif detected == "three" and wrist.x > 0.5:
                             active_gesture = "three"
-                        elif detected == "four":
+                        elif detected == "four" and wrist.x > 0.5:
                             active_gesture = "four"
-                        elif detected == "five":
+                        elif detected == "five" and wrist.x > 0.5:
                             active_gesture = "five"
-                        elif detected == "six":
+                        elif detected == "six" and wrist.x > 0.5:
                             active_gesture = "six"
-                        elif detected == "fist":
+                        elif detected == "fist" and wrist.x > 0.5   :
                             active_gesture = "fist"
 
 

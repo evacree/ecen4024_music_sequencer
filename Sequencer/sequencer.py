@@ -28,17 +28,13 @@ VELOCITY = 100       # Volume (0-127, not important).
 # Mapping from gesture to MIDI note pitch.
 GESTURE_TO_NOTE = {
     "ok": 60,        # C3
-    "thumbs_up": 62, # D3
+    "fist": 62, # D3
     "one": 64,       # E3
     "two": 65,       # F3
     "three": 67,     # G3
     "four": 69,      # A3
     "five": 71,      # B3
     "six": 72,       # C4
-    "seven": 76,     # E4
-    "eight": 78,     # F#4
-    "nine": 80,      # G#4
-    "ten": 82        # A#4
 }
 
 # Mapping from MIDI note pitch to gesture.
