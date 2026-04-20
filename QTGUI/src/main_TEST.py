@@ -22,8 +22,8 @@ import time
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
-GESTURES = ["ok", "thumbs_up", "one", "two", "three", "four",
-            "five", "six", "seven", "eight", "nine", "ten"]
+GESTURES = ["ok", "fist", "one", "two", "three", "four",
+            "five", "six"]
 
 GESTURE_TO_NOTE = {
     "ok": 60, 
@@ -397,7 +397,7 @@ class SequencerGUI(QMainWindow):
     def refresh_grid(self):
         for (gesture, step), btn in self.step_buttons.items():
             note = GESTURE_TO_NOTE.get(gesture)
-            has_note = note and note in self.sequencer.sequence[step].get(gesture, [])
+            has_note = note is not None and note in self.sequencer.sequence[step].get(gesture, [])
             btn.setChecked(has_note)
             btn.setStyleSheet("background-color: #22c55e;" if has_note else "")
 
@@ -518,8 +518,8 @@ class CameraWorker(QThread):
                         # Map detected gesture
                         if detected == "ok" and wrist.x > 0.5:
                             active_gesture = "ok"
-                        elif detected == "thumbs_up" and wrist.x > 0.5:
-                            active_gesture = "thumbs_up"
+                        elif detected == "fist" and wrist.x > 0.5:
+                            active_gesture = "fist"
                         elif detected == "one" and wrist.x > 0.5:
                             active_gesture = "one"
                         elif detected == "two" and wrist.x > 0.5:
