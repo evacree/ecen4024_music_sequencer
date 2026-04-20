@@ -111,7 +111,6 @@ def main() -> None:
         while True:
             success, frame = cap.read()
             if not success:
-                # Avoid tight loop if camera hiccups
                 time.sleep(0.01)
                 continue
 
@@ -119,16 +118,14 @@ def main() -> None:
             rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             result = hands.process(rgb)
 
-            # Determine "active_gesture" for RIGHT hand only (this frame)
             active_gesture = None
 
             if result.multi_hand_landmarks and result.multi_handedness:
                 h, w = frame.shape[:2]
 
                 for hand_landmarks, handed in zip(result.multi_hand_landmarks, result.multi_handedness):
-                    hand_label = handed.classification[0].label  # 'Right' or 'Left'
+                    hand_label = handed.classification[0].label  # 'Right' or 'Left' hand
                     if hand_label != "Right":
-                        # Still draw if you want, but ignore for control
                         mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
                         continue
 
@@ -136,7 +133,6 @@ def main() -> None:
                     for lm in hand_landmarks.landmark:
                         coords.extend([lm.x, lm.y, lm.z])
 
-                    # Predict gesture (expects list-of-features)
                     gesture = model.predict([coords])[0]
                     active_gesture = str(gesture)
 
@@ -153,10 +149,8 @@ def main() -> None:
                     )
                     mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
-                    # Only use the first Right hand found
                     break
 
-            # --- Stability / debouncing ---
             if active_gesture == candidate:
                 cand_count += 1
             else:
@@ -172,7 +166,6 @@ def main() -> None:
                 if cand_count >= STABLE_ON:
                     stable_gesture = candidate
 
-            # --- MIDI state machine (ONLY ONE place where we send notes) ---
             target_note = GESTURE_TO_NOTE.get(stable_gesture)
 
             if target_note != current_note:
@@ -184,7 +177,6 @@ def main() -> None:
 
                 current_note = target_note
 
-            # Throttle prints so VS Code doesn't crawl
             now = time.time()
             if now - last_print > 0.25:
                 if stable_gesture is None:
@@ -199,15 +191,12 @@ def main() -> None:
             if key == ord('q'):
                 break
 
-            # allow window close button to exit
             if cv2.getWindowProperty("capture image", cv2.WND_PROP_VISIBLE) < 1:
                 break
 
-            # tiny sleep to keep CPU sane
             time.sleep(0.001)
 
     finally:
-        # Clean shutdown
         try:
             if current_note is not None:
                 send_note_off(outport, current_note)
