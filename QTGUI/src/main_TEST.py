@@ -71,6 +71,8 @@ class CameraWorker(QThread):
             with open(MODEL_PATH, "rb") as f:
                 model = pickle.load(f)
 
+            
+
             import mediapipe as mp
             mp_hands = mp.solutions.hands
             hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1,
@@ -87,6 +89,9 @@ class CameraWorker(QThread):
                     continue
 
                 frame = cv2.flip(frame, 1)
+                # Draw vertical dead-zone divider at center of frame
+                h, w, _ = frame.shape
+                cv2.line(frame, (w // 2, 0), (w // 2, h), (0, 0, 255), 2)
                 rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 results = hands.process(rgb)
 
@@ -491,6 +496,10 @@ class CameraWorker(QThread):
                     continue
 
                 frame = cv2.flip(frame, 1)
+
+                frame_h, frame_w = frame.shape[:2]
+                cv2.line(frame, (frame_w // 2, 0), (frame_w // 2, frame_h), (0, 0, 255), 3)
+
                 rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 results = hands.process(rgb)
 

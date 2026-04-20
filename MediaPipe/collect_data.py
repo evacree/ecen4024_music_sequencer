@@ -48,6 +48,7 @@ def main():
     ) as hands:
         while True:
             ret, frame = cap.read()
+            frame = cv2.flip(frame, 1)
             if not ret:
                 break
             image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
