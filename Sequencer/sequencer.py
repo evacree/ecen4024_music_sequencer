@@ -260,7 +260,11 @@ if __name__ == "__main__":
     for i in range(1, 8, 2):
         seq.add_note(i, "three", 67)
 
-    print("\nLaunching GUI from QTGUI/src/main_TEST.py ...\n")
+    # print("\nLaunching GUI from QTGUI/src/main_TEST.py ...\n")
+    # sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'QTGUI', 'src'))
+    # from main_TEST import launch_gui
+    # launch_gui(seq)                       # OLD VERSION (CODE GUI)
+
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'QTGUI', 'src'))
-    from main_TEST import launch_gui
-    launch_gui(seq)
+    from mainApp import launch_gui
+    launch_gui(seq)                       # NEW (QtDesigner) VERSION
