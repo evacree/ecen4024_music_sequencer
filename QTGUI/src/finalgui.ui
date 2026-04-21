@@ -504,7 +504,7 @@
 }</string>
     </property>
     <property name="maximum">
-     <number>8</number>
+     <number>9</number>
     </property>
     <property name="orientation">
      <enum>Qt::Orientation::Vertical</enum>
@@ -537,7 +537,7 @@
      </palette>
     </property>
     <property name="maximum">
-     <number>8</number>
+     <number>9</number>
     </property>
     <property name="orientation">
      <enum>Qt::Orientation::Vertical</enum>
@@ -570,7 +570,7 @@
      </palette>
     </property>
     <property name="maximum">
-     <number>8</number>
+     <number>9</number>
     </property>
     <property name="orientation">
      <enum>Qt::Orientation::Vertical</enum>
@@ -603,7 +603,7 @@
      </palette>
     </property>
     <property name="maximum">
-     <number>8</number>
+     <number>9</number>
     </property>
     <property name="orientation">
      <enum>Qt::Orientation::Vertical</enum>
@@ -636,7 +636,7 @@
      </palette>
     </property>
     <property name="maximum">
-     <number>8</number>
+     <number>9</number>
     </property>
     <property name="orientation">
      <enum>Qt::Orientation::Vertical</enum>
@@ -669,7 +669,7 @@
      </palette>
     </property>
     <property name="maximum">
-     <number>8</number>
+     <number>9</number>
     </property>
     <property name="orientation">
      <enum>Qt::Orientation::Vertical</enum>
@@ -702,7 +702,7 @@
      </palette>
     </property>
     <property name="maximum">
-     <number>8</number>
+     <number>9</number>
     </property>
     <property name="orientation">
      <enum>Qt::Orientation::Vertical</enum>
@@ -735,7 +735,7 @@
      </palette>
     </property>
     <property name="maximum">
-     <number>8</number>
+     <number>9</number>
     </property>
     <property name="orientation">
      <enum>Qt::Orientation::Vertical</enum>
@@ -768,7 +768,7 @@
      </palette>
     </property>
     <property name="maximum">
-     <number>8</number>
+     <number>9</number>
     </property>
     <property name="orientation">
      <enum>Qt::Orientation::Vertical</enum>
@@ -801,7 +801,7 @@
      </palette>
     </property>
     <property name="maximum">
-     <number>8</number>
+     <number>9</number>
     </property>
     <property name="orientation">
      <enum>Qt::Orientation::Vertical</enum>
@@ -834,7 +834,7 @@
      </palette>
     </property>
     <property name="maximum">
-     <number>8</number>
+     <number>9</number>
     </property>
     <property name="orientation">
      <enum>Qt::Orientation::Vertical</enum>
