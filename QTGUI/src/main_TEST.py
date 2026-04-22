@@ -2,10 +2,6 @@
 # Evan Acree | 4/15/26
 
 
-#TODO: ADD INSTRUMENT (CHANNEL) SELECT, FIX CH0+1 SETTING LOGIC (ONLY ONE CHANNEL OPERATED CURRENTLY)
-
-
-
 import sys
 import cv2
 from PyQt6.QtWidgets import (
@@ -27,7 +23,7 @@ GESTURES = ["ok", "fist", "one", "two", "three", "four",
 
 GESTURE_TO_NOTE = {
     "ok": 60, 
-    "fist" : 62,         #  major scale   # 
+    "fist" : 62,         #  major scale
     "one" : 64,
     "two" : 65,
     "three" : 67,
@@ -152,7 +148,7 @@ class SequencerGUI(QMainWindow):
         super().__init__()
         self.sequencer = sequencer
         self.step_buttons = {}
-        self.visual_offset = -0.7
+        self.visual_offset = -0.7 # default visual offset
 
         self.setWindowTitle("Hand Gesture Music Sequencer")
         self.setGeometry(100, 100, 1620, 820)
@@ -161,18 +157,18 @@ class SequencerGUI(QMainWindow):
         self.setCentralWidget(central)
         main_layout = QHBoxLayout(central)
 
-        # LEFT: Controls + Grid
+        # Left-side Controls + Grid
         left_panel = QVBoxLayout()
         main_layout.addLayout(left_panel, stretch=2)
 
         controls = QHBoxLayout()
         left_panel.addLayout(controls)
 
-        # BPM
+        # BPM Box
         bpm_group = QGroupBox("BPM")
         bpm_layout = QHBoxLayout()
         self.bpm_spin = QSpinBox()
-        self.bpm_spin.setRange(20, 300)
+        self.bpm_spin.setRange(20, 300) # allowed BPM range
         self.bpm_spin.setValue(int(self.sequencer.bpm))
         self.bpm_spin.setMinimumWidth(90)
         self.bpm_spin.valueChanged.connect(self.change_bpm)
@@ -181,11 +177,11 @@ class SequencerGUI(QMainWindow):
         bpm_group.setLayout(bpm_layout)
         controls.addWidget(bpm_group)
 
-        # Visual Offset
+        # Visual Offset Slider
         offset_group = QGroupBox("Visual Offset")
         offset_layout = QHBoxLayout()
         self.offset_slider = QSlider(Qt.Orientation.Horizontal)
-        self.offset_slider.setRange(-40, 40)
+        self.offset_slider.setRange(-40, 40) # -4.0 to 4.0 second visual offset range
         self.offset_slider.setValue(int(self.visual_offset * 10))
         self.offset_slider.valueChanged.connect(self.change_offset)
         self.offset_label = QLabel(f"Offset: {self.visual_offset:.1f}")
@@ -195,7 +191,7 @@ class SequencerGUI(QMainWindow):
         offset_group.setLayout(offset_layout)
         controls.addWidget(offset_group)
 
-        # Transport
+        # Start/Stop/Reset
         self.start_btn = QPushButton("▶ Start")
         self.stop_btn = QPushButton("⏹ Stop")
         self.reset_btn = QPushButton("Reset All")
@@ -223,16 +219,16 @@ class SequencerGUI(QMainWindow):
         scroll.setWidget(grid_widget)
         left_panel.addWidget(grid_group)
 
-        # RIGHT: Camera + Synth Settings
+        # Right-side Camera
         right_panel = QVBoxLayout()
         main_layout.addLayout(right_panel, stretch=1)
 
-        # Synth Settings Panel (matches your drawing)
+        # Synth Settings Panel
         synth_group = QGroupBox("Synth Settings")
         synth_layout = QVBoxLayout()
         synth_group.setLayout(synth_layout)
 
-        # Drawbars (9 columns with +/-)
+        # Drawbars (9 vertical/column sliders with +/-), range 0 to 8
         drawbar_layout = QHBoxLayout()
         self.drawbar_labels = []
         self.drawbar_values = [8, 8, 8, 4, 0, 0, 0, 0, 4]  # initial values
@@ -242,8 +238,8 @@ class SequencerGUI(QMainWindow):
             label = QLabel(f"{i+1}")
             plus = QPushButton("+")
             minus = QPushButton("-")
-            plus.clicked.connect(lambda _, idx=i: self.change_drawbar(idx, 1))
-            minus.clicked.connect(lambda _, idx=i: self.change_drawbar(idx, -1))
+            plus.clicked.connect(lambda _, idx=i: self.change_drawbar(idx, 1)) # increment drawbar value, CHANGE to set value function instead soon
+            minus.clicked.connect(lambda _, idx=i: self.change_drawbar(idx, -1)) # decrement drawbar value, CHANGE to set value function instead soon
             vbox.addWidget(label)
             vbox.addWidget(plus)
             vbox.addWidget(minus)
@@ -259,9 +255,9 @@ class SequencerGUI(QMainWindow):
         self.pedal_vol = QRadioButton("Volume")
         self.pedal_wah = QRadioButton("Wah")
         self.pedal_none.setChecked(True)
-        self.pedal_none.toggled.connect(lambda: self.send_midi(24, channel=1))
-        self.pedal_vol.toggled.connect(lambda: self.send_midi(25, channel=1))
-        self.pedal_wah.toggled.connect(lambda: self.send_midi(26, channel=1))
+        self.pedal_none.toggled.connect(lambda: self.send_midi(24, channel=1)) # None pedal = 24
+        self.pedal_vol.toggled.connect(lambda: self.send_midi(25, channel=1)) # Volume pedal = 25
+        self.pedal_wah.toggled.connect(lambda: self.send_midi(26, channel=1)) # Wah pedal = 26
         pedal_v.addWidget(self.pedal_none)
         pedal_v.addWidget(self.pedal_vol)
         pedal_v.addWidget(self.pedal_wah)
@@ -273,8 +269,8 @@ class SequencerGUI(QMainWindow):
         self.bass_synth = QRadioButton("Synth Bass")
         self.bass_string = QRadioButton("String Bass")
         self.bass_synth.setChecked(True)
-        self.bass_synth.toggled.connect(lambda: self.send_midi(97, channel=2))
-        self.bass_string.toggled.connect(lambda: self.send_midi(98, channel=2))
+        self.bass_synth.toggled.connect(lambda: self.send_midi(97, channel=2)) # synth bass = 97
+        self.bass_string.toggled.connect(lambda: self.send_midi(98, channel=2)) # string bass = 98
         bass_v.addWidget(self.bass_synth)
         bass_v.addWidget(self.bass_string)
         bass_group.setLayout(bass_v)
@@ -286,8 +282,11 @@ class SequencerGUI(QMainWindow):
         preset_layout = QHBoxLayout()
         preset1 = QPushButton("Preset 1")
         preset2 = QPushButton("Preset 2")
-        preset1.clicked.connect(lambda: self.send_midi(34))
-        preset2.clicked.connect(lambda: self.send_midi(35))
+        preset1.clicked.connect(lambda: self.send_midi(34)) # preset 1 = 34
+        preset2.clicked.connect(lambda: self.send_midi(35)) # preset 2 = 35
+
+        # preset 3 = 36, preset 4 = 37
+
         preset_layout.addWidget(preset1)
         preset_layout.addWidget(preset2)
         synth_layout.addLayout(preset_layout)
@@ -367,8 +366,13 @@ class SequencerGUI(QMainWindow):
                 mido.Message('note_off', note=note, velocity=0, channel=channel)))
 
     def change_drawbar(self, drawbar_num, direction):
-        """Correct drawbar logic: 108 is held as modifier for increment.
-           Drawbar 1 = note 97, Drawbar 2 = 98, ..., Drawbar 9 = 105"""
+        """
+        
+           Drawbar logic: 108 is held as modifier for increment like CTRL.
+           Drawbar 1 = note 97, Drawbar 2 = 98, ..., Drawbar 9 = 105
+           Real-life mapping: 1 = 16', 2 = 5 1/3', 3 = 8' (fundamental), ...
+
+        """
         base = 97 + drawbar_num   # 97 for drawbar 1, 98 for 2, ..., 105 for 9
 
         if self.sequencer.midi_out:
@@ -383,30 +387,30 @@ class SequencerGUI(QMainWindow):
                 time.sleep(0.02)
                 self.sequencer.midi_out.send(mido.Message('note_off', note=base, velocity=0, channel=0))
 
-    def start_sequencer(self):
+    def start_sequencer(self): # start button logic
         self.sequencer.start()
-        self.start_btn.setEnabled(False)
+        self.start_btn.setEnabled(False) # one-hot between start/stop
         self.stop_btn.setEnabled(True)
 
-    def stop_sequencer(self):
+    def stop_sequencer(self): # stop button logic
         self.sequencer.stop()
-        self.start_btn.setEnabled(True)
+        self.start_btn.setEnabled(True) # one-hot between start/stop
         self.stop_btn.setEnabled(False)
 
-    def reset_sequencer(self):
+    def reset_sequencer(self):  # reset button logic
         self.sequencer.clear_all()
-        self.sequencer.current_step = 0
-        self.refresh_grid()
+        self.sequencer.current_step = 0 # reset back to beat 0 (beginning)
+        self.refresh_grid()             # clear grid (set all note statuses to 0)
         self.on_step_changed(0)
 
-    def refresh_grid(self):
+    def refresh_grid(self): # update grid display based on stored note status
         for (gesture, step), btn in self.step_buttons.items():
             note = GESTURE_TO_NOTE.get(gesture)
             has_note = note is not None and note in self.sequencer.sequence[step].get(gesture, [])
             btn.setChecked(has_note)
             btn.setStyleSheet("background-color: #22c55e;" if has_note else "")
 
-    def on_step_changed(self, actual_step):
+    def on_step_changed(self, actual_step): 
         total_steps = self.sequencer.get_sequence_state()["total_steps"]
         visual_step = (actual_step + self.visual_offset) % total_steps
         measure = (actual_step // 8) + 1

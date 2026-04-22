@@ -218,7 +218,6 @@ class GestureSequencer:
         current_time = time.time()
         track_id = gesture
 
-        # ← NEW DEBOUNCE: Ignore the same gesture if it was processed less than 250ms ago
         if track_id in self.last_gesture_time and current_time - self.last_gesture_time[track_id] < 0.25:
             return
 

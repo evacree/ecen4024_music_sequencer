@@ -438,7 +438,7 @@ class Ui_MainWindow(object):
         self.bpm_label.setGeometry(QtCore.QRect(470, 0, 31, 16))
         self.bpm_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.bpm_label.setObjectName("bpm_label")
-        self.graphicsView = QVideoWidget(parent=self.centralwidget)
+        self.graphicsView = QtWidgets.QLabel(parent=self.centralwidget)
         self.graphicsView.setGeometry(QtCore.QRect(900, 120, 521, 401))
         self.graphicsView.setObjectName("graphicsView")
         self.mix_label = QtWidgets.QLabel(parent=self.centralwidget)
@@ -1328,7 +1328,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "ECEN4024 - Hand Gesture Music Sequencer"))
         self.start_btn.setText(_translate("MainWindow", "Start"))
         self.stop_btn.setText(_translate("MainWindow", "Stop"))
         self.preset2_btn.setText(_translate("MainWindow", "2"))
@@ -1398,7 +1398,6 @@ class Ui_MainWindow(object):
         self.sixth_harmonic_label.setText(_translate("MainWindow", "1 1/3\'"))
         self.eighth_harmonic_label.setText(_translate("MainWindow", "1\'"))
         self.fifth_harmonic_label.setText(_translate("MainWindow", "1 3/5\'"))
-from PyQt6.QtMultimediaWidgets import QVideoWidget
 
 
 if __name__ == "__main__":
