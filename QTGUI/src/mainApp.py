@@ -76,13 +76,11 @@ class CameraWorker(QtCore.QThread):
                         coords = []
                         for lm in hand_landmarks.landmark:
                             coords.extend([lm.x, lm.y, lm.z])  
-                            
+
                         detected = model.predict([coords])[0]
-                        if detected in GESTURES:
-                            active_gesture = detected
+                        
 
                         midi2note = MIDI_TO_NOTE.get(GESTURE_TO_NOTE.get(detected), "Unknown")
-                        mp_draw.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
                         wrist = hand_landmarks.landmark[0]
 
                         text = f"{detected}: {midi2note}"
