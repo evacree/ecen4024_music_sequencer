@@ -253,12 +253,7 @@ class GestureSequencer:
 # ----- Creates sequencer and sets up GUI from QTGUI/src/main_TEST.py. -----
 if __name__ == "__main__":
     seq = GestureSequencer()
-    # Test pattern, remove eventually.
-    for i in range(0, 8, 2):
-        seq.add_note(i, "ok", 60)
-    for i in range(1, 8, 2):
-        seq.add_note(i, "three", 67)
-
+    
     # print("\nLaunching GUI from QTGUI/src/main_TEST.py ...\n")
     # sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'QTGUI', 'src'))
     # from main_TEST import launch_gui
