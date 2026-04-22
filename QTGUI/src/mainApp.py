@@ -62,6 +62,10 @@ class CameraWorker(QtCore.QThread):
                 if not success: continue
 
                 frame = cv2.flip(frame, 1)
+
+                frame_h, frame_w = frame.shape[:2]
+                cv2.line(frame, (frame_w // 2, 0), (frame_w // 2, frame_h), (0, 0, 255), 3)
+
                 rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 results = hands.process(rgb)
 
@@ -69,12 +73,44 @@ class CameraWorker(QtCore.QThread):
                 if results.multi_hand_landmarks:
                     for hand_landmarks in results.multi_hand_landmarks:
                         mp_draw.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-                        coords = [lm.x for lm in hand_landmarks.landmark] + \
-                                 [lm.y for lm in hand_landmarks.landmark] + \
-                                 [lm.z for lm in hand_landmarks.landmark]
+                        coords = []
+                        for lm in hand_landmarks.landmark:
+                            coords.extend([lm.x, lm.y, lm.z])  
+                            
                         detected = model.predict([coords])[0]
                         if detected in GESTURES:
                             active_gesture = detected
+
+                        midi2note = MIDI_TO_NOTE.get(GESTURE_TO_NOTE.get(detected), "Unknown")
+                        mp_draw.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+                        wrist = hand_landmarks.landmark[0]
+
+                        text = f"{detected}: {midi2note}"
+                        (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_COMPLEX, 1, 2)
+                        x = frame.shape[1] - text_width - 10
+                        y = frame.shape[0] - 10
+                        cv2.putText(frame, text, (x, y), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+
+                        # Map detected gesture
+                        if detected == "ok" and wrist.x > 0.5:
+                            active_gesture = "ok"
+                        elif detected == "fist" and wrist.x > 0.5:
+                            active_gesture = "fist"
+                        elif detected == "one" and wrist.x > 0.5:
+                            active_gesture = "one"
+                        elif detected == "two" and wrist.x > 0.5:
+                            active_gesture = "two"
+                        elif detected == "three" and wrist.x > 0.5:
+                            active_gesture = "three"
+                        elif detected == "four" and wrist.x > 0.5:
+                            active_gesture = "four"
+                        elif detected == "five" and wrist.x > 0.5:
+                            active_gesture = "five"
+                        elif detected == "six" and wrist.x > 0.5:
+                            active_gesture = "six"
+                        elif detected == "fist" and wrist.x > 0.5   :
+                            active_gesture = "fist"
+
 
                 # Stability filter
                 if active_gesture == self.candidate:
