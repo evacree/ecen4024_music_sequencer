@@ -14,837 +14,11 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QSlider" name="sub_fundamental">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>620</y>
-      <width>20</width>
-      <height>201</height>
-     </rect>
-    </property>
-    <property name="sizeIncrement">
-     <size>
-      <width>0</width>
-      <height>0</height>
-     </size>
-    </property>
-    <property name="palette">
-     <palette>
-      <active>
-       <colorrole role="WindowText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>255</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Button">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>30</red>
-          <green>30</green>
-          <blue>30</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Light">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>45</red>
-          <green>45</green>
-          <blue>45</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Midlight">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>37</red>
-          <green>37</green>
-          <blue>37</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Dark">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>15</red>
-          <green>15</green>
-          <blue>15</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Mid">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>20</red>
-          <green>20</green>
-          <blue>20</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Text">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>255</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="BrightText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>255</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="ButtonText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>255</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Base">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>0</red>
-          <green>0</green>
-          <blue>0</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Window">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>30</red>
-          <green>30</green>
-          <blue>30</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Shadow">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>0</red>
-          <green>0</green>
-          <blue>0</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="AlternateBase">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>15</red>
-          <green>15</green>
-          <blue>15</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="ToolTipBase">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>220</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="ToolTipText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>0</red>
-          <green>0</green>
-          <blue>0</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="PlaceholderText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="127">
-          <red>255</red>
-          <green>255</green>
-          <blue>255</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Accent">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>116</red>
-          <green>58</green>
-          <blue>38</blue>
-         </color>
-        </brush>
-       </colorrole>
-      </active>
-      <inactive>
-       <colorrole role="WindowText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>255</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Button">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>30</red>
-          <green>30</green>
-          <blue>30</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Light">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>45</red>
-          <green>45</green>
-          <blue>45</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Midlight">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>37</red>
-          <green>37</green>
-          <blue>37</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Dark">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>15</red>
-          <green>15</green>
-          <blue>15</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Mid">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>20</red>
-          <green>20</green>
-          <blue>20</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Text">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>255</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="BrightText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>255</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="ButtonText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>255</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Base">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>0</red>
-          <green>0</green>
-          <blue>0</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Window">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>30</red>
-          <green>30</green>
-          <blue>30</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Shadow">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>0</red>
-          <green>0</green>
-          <blue>0</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="AlternateBase">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>15</red>
-          <green>15</green>
-          <blue>15</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="ToolTipBase">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>220</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="ToolTipText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>0</red>
-          <green>0</green>
-          <blue>0</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="PlaceholderText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="127">
-          <red>255</red>
-          <green>255</green>
-          <blue>255</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Accent">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>0</red>
-          <green>0</green>
-          <blue>0</blue>
-         </color>
-        </brush>
-       </colorrole>
-      </inactive>
-      <disabled>
-       <colorrole role="WindowText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>15</red>
-          <green>15</green>
-          <blue>15</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Button">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>30</red>
-          <green>30</green>
-          <blue>30</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Light">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>45</red>
-          <green>45</green>
-          <blue>45</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Midlight">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>37</red>
-          <green>37</green>
-          <blue>37</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Dark">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>15</red>
-          <green>15</green>
-          <blue>15</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Mid">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>20</red>
-          <green>20</green>
-          <blue>20</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Text">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>15</red>
-          <green>15</green>
-          <blue>15</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="BrightText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>255</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="ButtonText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>15</red>
-          <green>15</green>
-          <blue>15</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Base">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>30</red>
-          <green>30</green>
-          <blue>30</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Window">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>30</red>
-          <green>30</green>
-          <blue>30</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Shadow">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>0</red>
-          <green>0</green>
-          <blue>0</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="AlternateBase">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>30</red>
-          <green>30</green>
-          <blue>30</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="ToolTipBase">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>220</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="ToolTipText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>0</red>
-          <green>0</green>
-          <blue>0</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="PlaceholderText">
-        <brush brushstyle="SolidPattern">
-         <color alpha="127">
-          <red>15</red>
-          <green>15</green>
-          <blue>15</blue>
-         </color>
-        </brush>
-       </colorrole>
-       <colorrole role="Accent">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>21</red>
-          <green>21</green>
-          <blue>21</blue>
-         </color>
-        </brush>
-       </colorrole>
-      </disabled>
-     </palette>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QProgressBar::chunk {
-    background-color: #05B8CC;
-}</string>
-    </property>
-    <property name="maximum">
-     <number>9</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Vertical</enum>
-    </property>
-   </widget>
-   <widget class="QSlider" name="sub_third">
-    <property name="geometry">
-     <rect>
-      <x>260</x>
-      <y>620</y>
-      <width>20</width>
-      <height>201</height>
-     </rect>
-    </property>
-    <property name="palette">
-     <palette>
-      <active>
-       <colorrole role="Accent">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>116</red>
-          <green>58</green>
-          <blue>38</blue>
-         </color>
-        </brush>
-       </colorrole>
-      </active>
-      <inactive/>
-      <disabled/>
-     </palette>
-    </property>
-    <property name="maximum">
-     <number>9</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Vertical</enum>
-    </property>
-   </widget>
-   <widget class="QSlider" name="fundamental">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>620</y>
-      <width>20</width>
-      <height>201</height>
-     </rect>
-    </property>
-    <property name="palette">
-     <palette>
-      <active>
-       <colorrole role="Accent">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>234</blue>
-         </color>
-        </brush>
-       </colorrole>
-      </active>
-      <inactive/>
-      <disabled/>
-     </palette>
-    </property>
-    <property name="maximum">
-     <number>9</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Vertical</enum>
-    </property>
-   </widget>
-   <widget class="QSlider" name="second_harmonic">
-    <property name="geometry">
-     <rect>
-      <x>380</x>
-      <y>620</y>
-      <width>20</width>
-      <height>201</height>
-     </rect>
-    </property>
-    <property name="palette">
-     <palette>
-      <active>
-       <colorrole role="Accent">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>234</blue>
-         </color>
-        </brush>
-       </colorrole>
-      </active>
-      <inactive/>
-      <disabled/>
-     </palette>
-    </property>
-    <property name="maximum">
-     <number>9</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Vertical</enum>
-    </property>
-   </widget>
-   <widget class="QSlider" name="fourth_harmonic">
-    <property name="geometry">
-     <rect>
-      <x>500</x>
-      <y>620</y>
-      <width>20</width>
-      <height>201</height>
-     </rect>
-    </property>
-    <property name="palette">
-     <palette>
-      <active>
-       <colorrole role="Accent">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>234</blue>
-         </color>
-        </brush>
-       </colorrole>
-      </active>
-      <inactive/>
-      <disabled/>
-     </palette>
-    </property>
-    <property name="maximum">
-     <number>9</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Vertical</enum>
-    </property>
-   </widget>
-   <widget class="QSlider" name="third_harmonic">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>620</y>
-      <width>20</width>
-      <height>201</height>
-     </rect>
-    </property>
-    <property name="palette">
-     <palette>
-      <active>
-       <colorrole role="Accent">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>47</red>
-          <green>47</green>
-          <blue>47</blue>
-         </color>
-        </brush>
-       </colorrole>
-      </active>
-      <inactive/>
-      <disabled/>
-     </palette>
-    </property>
-    <property name="maximum">
-     <number>9</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Vertical</enum>
-    </property>
-   </widget>
-   <widget class="QSlider" name="sixth_harmonic">
-    <property name="geometry">
-     <rect>
-      <x>620</x>
-      <y>620</y>
-      <width>20</width>
-      <height>201</height>
-     </rect>
-    </property>
-    <property name="palette">
-     <palette>
-      <active>
-       <colorrole role="Accent">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>47</red>
-          <green>47</green>
-          <blue>47</blue>
-         </color>
-        </brush>
-       </colorrole>
-      </active>
-      <inactive/>
-      <disabled/>
-     </palette>
-    </property>
-    <property name="maximum">
-     <number>9</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Vertical</enum>
-    </property>
-   </widget>
-   <widget class="QSlider" name="fifth_harmonic">
-    <property name="geometry">
-     <rect>
-      <x>560</x>
-      <y>620</y>
-      <width>20</width>
-      <height>201</height>
-     </rect>
-    </property>
-    <property name="palette">
-     <palette>
-      <active>
-       <colorrole role="Accent">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>47</red>
-          <green>47</green>
-          <blue>47</blue>
-         </color>
-        </brush>
-       </colorrole>
-      </active>
-      <inactive/>
-      <disabled/>
-     </palette>
-    </property>
-    <property name="maximum">
-     <number>9</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Vertical</enum>
-    </property>
-   </widget>
-   <widget class="QSlider" name="eight_harmonic">
-    <property name="geometry">
-     <rect>
-      <x>680</x>
-      <y>620</y>
-      <width>20</width>
-      <height>201</height>
-     </rect>
-    </property>
-    <property name="palette">
-     <palette>
-      <active>
-       <colorrole role="Accent">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>234</blue>
-         </color>
-        </brush>
-       </colorrole>
-      </active>
-      <inactive/>
-      <disabled/>
-     </palette>
-    </property>
-    <property name="maximum">
-     <number>9</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Vertical</enum>
-    </property>
-   </widget>
-   <widget class="QSlider" name="mix_slider">
-    <property name="geometry">
-     <rect>
-      <x>1060</x>
-      <y>620</y>
-      <width>20</width>
-      <height>201</height>
-     </rect>
-    </property>
-    <property name="palette">
-     <palette>
-      <active>
-       <colorrole role="Accent">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>234</blue>
-         </color>
-        </brush>
-       </colorrole>
-      </active>
-      <inactive/>
-      <disabled/>
-     </palette>
-    </property>
-    <property name="maximum">
-     <number>9</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Vertical</enum>
-    </property>
-   </widget>
-   <widget class="QSlider" name="trem_slider">
-    <property name="geometry">
-     <rect>
-      <x>1120</x>
-      <y>620</y>
-      <width>20</width>
-      <height>201</height>
-     </rect>
-    </property>
-    <property name="palette">
-     <palette>
-      <active>
-       <colorrole role="Accent">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>255</red>
-          <green>255</green>
-          <blue>234</blue>
-         </color>
-        </brush>
-       </colorrole>
-      </active>
-      <inactive/>
-      <disabled/>
-     </palette>
-    </property>
-    <property name="maximum">
-     <number>9</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Vertical</enum>
-    </property>
-   </widget>
    <widget class="QPushButton" name="none_btn">
     <property name="geometry">
      <rect>
-      <x>810</x>
-      <y>580</y>
+      <x>1000</x>
+      <y>670</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -865,8 +39,8 @@
    <widget class="QPushButton" name="volume_btn">
     <property name="geometry">
      <rect>
-      <x>880</x>
-      <y>580</y>
+      <x>1070</x>
+      <y>670</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -887,8 +61,8 @@
    <widget class="QPushButton" name="wah_btn">
     <property name="geometry">
      <rect>
-      <x>950</x>
-      <y>580</y>
+      <x>1140</x>
+      <y>670</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -909,8 +83,8 @@
    <widget class="QPushButton" name="slow_btn">
     <property name="geometry">
      <rect>
-      <x>810</x>
-      <y>680</y>
+      <x>1210</x>
+      <y>670</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -931,8 +105,8 @@
    <widget class="QPushButton" name="fast_btn">
     <property name="geometry">
      <rect>
-      <x>810</x>
-      <y>750</y>
+      <x>1280</x>
+      <y>670</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -995,8 +169,8 @@
    <widget class="QPushButton" name="preset2_btn">
     <property name="geometry">
      <rect>
-      <x>1360</x>
-      <y>660</y>
+      <x>1350</x>
+      <y>670</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -1017,8 +191,8 @@
    <widget class="QPushButton" name="preset1_btn">
     <property name="geometry">
      <rect>
-      <x>1360</x>
-      <y>600</y>
+      <x>1350</x>
+      <y>610</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -1039,8 +213,8 @@
    <widget class="QPushButton" name="preset4_btn">
     <property name="geometry">
      <rect>
-      <x>1360</x>
-      <y>780</y>
+      <x>1350</x>
+      <y>790</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -1061,8 +235,8 @@
    <widget class="QPushButton" name="preset3_btn">
     <property name="geometry">
      <rect>
-      <x>1360</x>
-      <y>720</y>
+      <x>1350</x>
+      <y>730</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -1080,63 +254,11 @@
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="Line" name="line">
-    <property name="geometry">
-     <rect>
-      <x>770</x>
-      <y>550</y>
-      <width>20</width>
-      <height>281</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Vertical</enum>
-    </property>
-   </widget>
-   <widget class="Line" name="line_2">
-    <property name="geometry">
-     <rect>
-      <x>1020</x>
-      <y>550</y>
-      <width>20</width>
-      <height>271</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Vertical</enum>
-    </property>
-   </widget>
-   <widget class="Line" name="line_3">
-    <property name="geometry">
-     <rect>
-      <x>1150</x>
-      <y>550</y>
-      <width>20</width>
-      <height>271</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Vertical</enum>
-    </property>
-   </widget>
-   <widget class="Line" name="line_4">
-    <property name="geometry">
-     <rect>
-      <x>1320</x>
-      <y>550</y>
-      <width>20</width>
-      <height>271</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Vertical</enum>
-    </property>
-   </widget>
    <widget class="QPushButton" name="channel2_select_btn">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>740</y>
+      <x>1160</x>
+      <y>600</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -1157,8 +279,8 @@
    <widget class="QPushButton" name="channel0_select_btn">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>580</y>
+      <x>1000</x>
+      <y>600</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -1182,8 +304,8 @@
    <widget class="QLabel" name="channel_0_label">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>560</y>
+      <x>990</x>
+      <y>580</y>
       <width>61</width>
       <height>16</height>
      </rect>
@@ -1198,8 +320,8 @@
    <widget class="QLabel" name="channel_2_label">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>720</y>
+      <x>1150</x>
+      <y>580</y>
       <width>61</width>
       <height>16</height>
      </rect>
@@ -1214,8 +336,8 @@
    <widget class="QPushButton" name="synth_btn">
     <property name="geometry">
      <rect>
-      <x>1220</x>
-      <y>650</y>
+      <x>1000</x>
+      <y>740</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -1236,8 +358,8 @@
    <widget class="QPushButton" name="string_btn">
     <property name="geometry">
      <rect>
-      <x>1220</x>
-      <y>720</y>
+      <x>1070</x>
+      <y>740</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -1258,8 +380,8 @@
    <widget class="QLabel" name="none_btn_tag">
     <property name="geometry">
      <rect>
-      <x>810</x>
-      <y>560</y>
+      <x>1000</x>
+      <y>650</y>
       <width>41</width>
       <height>16</height>
      </rect>
@@ -1274,8 +396,8 @@
    <widget class="QLabel" name="volume_btn_tag">
     <property name="geometry">
      <rect>
-      <x>880</x>
-      <y>560</y>
+      <x>1070</x>
+      <y>650</y>
       <width>41</width>
       <height>16</height>
      </rect>
@@ -1290,8 +412,8 @@
    <widget class="QLabel" name="wah_btn_tag">
     <property name="geometry">
      <rect>
-      <x>950</x>
-      <y>560</y>
+      <x>1140</x>
+      <y>650</y>
       <width>41</width>
       <height>16</height>
      </rect>
@@ -1306,8 +428,8 @@
    <widget class="QLabel" name="slow_btn_tag">
     <property name="geometry">
      <rect>
-      <x>860</x>
-      <y>690</y>
+      <x>1220</x>
+      <y>650</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -1319,8 +441,8 @@
    <widget class="QLabel" name="fast_btn_label">
     <property name="geometry">
      <rect>
-      <x>860</x>
-      <y>760</y>
+      <x>1290</x>
+      <y>650</y>
       <width>21</width>
       <height>16</height>
      </rect>
@@ -1332,34 +454,40 @@
    <widget class="QLabel" name="synth_label">
     <property name="geometry">
      <rect>
-      <x>1270</x>
-      <y>660</y>
-      <width>31</width>
-      <height>16</height>
+      <x>1000</x>
+      <y>720</y>
+      <width>41</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
      <string>Synth</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QLabel" name="string_label">
     <property name="geometry">
      <rect>
-      <x>1270</x>
-      <y>730</y>
-      <width>31</width>
+      <x>1070</x>
+      <y>720</y>
+      <width>41</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
      <string>String</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QLabel" name="presets_label">
     <property name="geometry">
      <rect>
-      <x>1360</x>
-      <y>570</y>
+      <x>1350</x>
+      <y>580</y>
       <width>51</width>
       <height>16</height>
      </rect>
@@ -1374,7 +502,7 @@
    <widget class="Line" name="line_5">
     <property name="geometry">
      <rect>
-      <x>900</x>
+      <x>910</x>
       <y>530</y>
       <width>501</width>
       <height>20</height>
@@ -1442,8 +570,8 @@
    <widget class="QLabel" name="mix_label">
     <property name="geometry">
      <rect>
-      <x>1050</x>
-      <y>600</y>
+      <x>70</x>
+      <y>570</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -1458,8 +586,8 @@
    <widget class="QLabel" name="trem_label">
     <property name="geometry">
      <rect>
-      <x>1110</x>
-      <y>600</y>
+      <x>130</x>
+      <y>570</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -1490,8 +618,8 @@
    <widget class="QPushButton" name="channel1_select_btn_2">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>660</y>
+      <x>1080</x>
+      <y>600</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -1515,8 +643,8 @@
    <widget class="QPushButton" name="channel3_select_btn_3">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>820</y>
+      <x>1240</x>
+      <y>600</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -1540,8 +668,8 @@
    <widget class="QLabel" name="channel_1_label">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>640</y>
+      <x>1070</x>
+      <y>580</y>
       <width>61</width>
       <height>16</height>
      </rect>
@@ -1556,8 +684,8 @@
    <widget class="QLabel" name="channel_3_label">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>800</y>
+      <x>1230</x>
+      <y>580</y>
       <width>61</width>
       <height>16</height>
      </rect>
@@ -1589,7 +717,7 @@
     <property name="geometry">
      <rect>
       <x>200</x>
-      <y>830</y>
+      <y>860</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -2040,7 +1168,7 @@
     <property name="geometry">
      <rect>
       <x>260</x>
-      <y>830</y>
+      <y>860</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -2059,7 +1187,7 @@
     <property name="geometry">
      <rect>
       <x>320</x>
-      <y>830</y>
+      <y>860</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -2078,7 +1206,7 @@
     <property name="geometry">
      <rect>
       <x>380</x>
-      <y>830</y>
+      <y>860</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -2097,7 +1225,7 @@
     <property name="geometry">
      <rect>
       <x>440</x>
-      <y>830</y>
+      <y>860</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -2116,7 +1244,7 @@
     <property name="geometry">
      <rect>
       <x>500</x>
-      <y>830</y>
+      <y>860</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -2135,7 +1263,7 @@
     <property name="geometry">
      <rect>
       <x>560</x>
-      <y>830</y>
+      <y>860</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -2154,7 +1282,7 @@
     <property name="geometry">
      <rect>
       <x>620</x>
-      <y>830</y>
+      <y>860</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -2173,7 +1301,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>830</y>
+      <y>860</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -2192,7 +1320,7 @@
     <property name="geometry">
      <rect>
       <x>200</x>
-      <y>600</y>
+      <y>570</y>
       <width>21</width>
       <height>20</height>
      </rect>
@@ -2208,7 +1336,7 @@
     <property name="geometry">
      <rect>
       <x>250</x>
-      <y>600</y>
+      <y>570</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -2224,7 +1352,7 @@
     <property name="geometry">
      <rect>
       <x>320</x>
-      <y>600</y>
+      <y>570</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -2240,7 +1368,7 @@
     <property name="geometry">
      <rect>
       <x>430</x>
-      <y>600</y>
+      <y>570</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -2256,7 +1384,7 @@
     <property name="geometry">
      <rect>
       <x>500</x>
-      <y>600</y>
+      <y>570</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -2272,7 +1400,7 @@
     <property name="geometry">
      <rect>
       <x>380</x>
-      <y>600</y>
+      <y>570</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -2288,7 +1416,7 @@
     <property name="geometry">
      <rect>
       <x>610</x>
-      <y>600</y>
+      <y>570</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -2304,7 +1432,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>600</y>
+      <y>570</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -2320,7 +1448,7 @@
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>600</y>
+      <y>570</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -4007,6 +3135,737 @@
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QLabel" name="mix_readout_label">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>860</y>
+      <width>16</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::TextFormat::RichText</enum>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="trem_readout_label">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>860</y>
+      <width>16</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::TextFormat::RichText</enum>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_16">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>590</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_17">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>590</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_18">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>590</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_19">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>590</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_20">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>590</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_21">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>590</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_22">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>590</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_23">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>590</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_24">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>590</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_25">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>590</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_26">
+    <property name="geometry">
+     <rect>
+      <x>560</x>
+      <y>590</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>620</y>
+      <width>41</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>9</number>
+    </property>
+    <property name="value">
+     <number>2</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_38">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>830</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_39">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>830</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_40">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>830</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_41">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>830</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_42">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>830</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_43">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>830</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_44">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>830</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_45">
+    <property name="geometry">
+     <rect>
+      <x>560</x>
+      <y>830</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_46">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>830</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_47">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>830</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn7_48">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>830</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar_2">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>620</y>
+      <width>41</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>9</number>
+    </property>
+    <property name="value">
+     <number>2</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar_4">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>620</y>
+      <width>41</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>9</number>
+    </property>
+    <property name="value">
+     <number>2</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar_5">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>620</y>
+      <width>41</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>9</number>
+    </property>
+    <property name="value">
+     <number>2</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar_6">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>620</y>
+      <width>41</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>9</number>
+    </property>
+    <property name="value">
+     <number>2</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar_7">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>620</y>
+      <width>41</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>9</number>
+    </property>
+    <property name="value">
+     <number>2</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar_8">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>620</y>
+      <width>41</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>9</number>
+    </property>
+    <property name="value">
+     <number>2</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar_9">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>620</y>
+      <width>41</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>9</number>
+    </property>
+    <property name="value">
+     <number>2</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar_10">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>620</y>
+      <width>41</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>9</number>
+    </property>
+    <property name="value">
+     <number>2</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar_11">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>620</y>
+      <width>41</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>9</number>
+    </property>
+    <property name="value">
+     <number>2</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar_12">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>620</y>
+      <width>41</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>9</number>
+    </property>
+    <property name="value">
+     <number>2</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
