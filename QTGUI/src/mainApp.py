@@ -2,7 +2,7 @@
 # 1080p-friendly window size (fits your screen perfectly)
 
 from PyQt6 import QtWidgets, QtCore, QtGui
-from finalgui import Ui_MainWindow
+from finalguiRescalable import Ui_MainWindow
 from sequencer import GestureSequencer
 import cv2
 import os
