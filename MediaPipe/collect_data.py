@@ -1,4 +1,8 @@
 #to run: py collect_data.py --label ok --samples 200
+#data will be stored in data/gesture_data.csv with columns x0, y0, z0, ..., x20, y20, z20, label
+#copy that data over to gesture_data.csv in MediaPipe folder and run train_model.py to train a model on the collected data
+#you can delete the data/gesture_data.csv file after training if you want to collect new data for a different gesture label
+#it's important that there is only one header row in CSV file when training the model, so if you collect data for multiple labels, make sure to only keep the first header row and append new data rows without additional headers.
 import argparse
 import csv
 import os

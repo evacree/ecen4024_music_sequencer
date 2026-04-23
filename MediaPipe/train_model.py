@@ -1,3 +1,4 @@
+#used to train model on collected gesture data from collect_data.py
 import pickle
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
