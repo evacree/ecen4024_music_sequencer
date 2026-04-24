@@ -1290,7 +1290,7 @@ class Ui_MainWindow(object):
         self.line_2.setObjectName("line_2")
         self.gridLayout_3.addWidget(self.line_2, 5, 6, 1, 1)
         self.gridLayout_4.addLayout(self.gridLayout_3, 3, 3, 1, 1)
-        self.graphicsView = QVideoWidget(parent=self.centralwidget)
+        self.graphicsView = QtWidgets.QLabel(parent=self.centralwidget)
         self.graphicsView.setMaximumSize(QtCore.QSize(984, 16777215))
         self.graphicsView.setObjectName("graphicsView")
         self.gridLayout_4.addWidget(self.graphicsView, 8, 2, 1, 1)

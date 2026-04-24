@@ -3,7 +3,7 @@ import time
 from pythonosc.udp_client import SimpleUDPClient
 
 # Path to your SuperCollider file
-SC_FILE = "Synth4ChannelVer3.scd"
+SC_FILE = "C:/Users/22eva/OneDrive/Documents/ecen4024_music_sequencer/supercollider_Files/Synth/Synth4ChannelVer3.scd"
 
 # Launch SuperCollider (sclang)
 # Use path to sclang.exe file

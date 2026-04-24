@@ -17,7 +17,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout_6 = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout_6.setObjectName("gridLayout_6")
-        self.graphicsView = QVideoWidget(parent=self.centralwidget)
+        self.graphicsView = QtWidgets.QLabel(parent=self.centralwidget)
         self.graphicsView.setObjectName("graphicsView")
         self.gridLayout_6.addWidget(self.graphicsView, 1, 1, 1, 1)
         self.frame_4 = QtWidgets.QFrame(parent=self.centralwidget)

@@ -66,6 +66,7 @@ class GestureSequencer:
         self.step_signal = StepSignal()
         self.last_gesture_time = {}         # ← NEW: Per-track debounce timer to stop gesture spam
         self._open_midi_ports()
+        self.current_midi_channel = 0
 
     # METHOD: Obtains & connects to the correct LoopMIDI I/O ports.
     def _open_midi_ports(self):
@@ -159,9 +160,9 @@ class GestureSequencer:
         for notes in list(self.active_notes.values()):
             if isinstance(notes, list):
                 for n in notes:
-                    self.midi_out.send(mido.Message('note_off', note=n, velocity=0, channel=MIDI_CHANNEL))
+                    self.midi_out.send(mido.Message('note_off', note=n, velocity=0, channel=self.current_midi_channel))
             else:
-                self.midi_out.send(mido.Message('note_off', note=notes, velocity=0, channel=MIDI_CHANNEL))
+                self.midi_out.send(mido.Message('note_off', note=notes, velocity=0, channel=self.current_midi_channel))
         self.active_notes.clear()
 
     # METHOD: Runs the metronome, keeping time based on the current beat count and BPM.
@@ -196,7 +197,7 @@ class GestureSequencer:
     def _note_on_track(self, track_id: str, midi_notes: list):
         self._note_off_track(track_id)
         for note in midi_notes:
-            self.midi_out.send(mido.Message('note_on', note=note, velocity=VELOCITY, channel=MIDI_CHANNEL))
+            self.midi_out.send(mido.Message('note_on', note=note, velocity=VELOCITY, channel=self.current_midi_channel))
         self.active_notes[track_id] = midi_notes[:] if len(midi_notes) > 1 else midi_notes[0]
 
     def _note_off_track(self, track_id: str):
@@ -204,9 +205,9 @@ class GestureSequencer:
             notes = self.active_notes[track_id]
             if isinstance(notes, list):
                 for n in notes:
-                    self.midi_out.send(mido.Message('note_off', note=n, velocity=0, channel=MIDI_CHANNEL))
+                    self.midi_out.send(mido.Message('note_off', note=n, velocity=0, channel=self.current_midi_channel))
             else:
-                self.midi_out.send(mido.Message('note_off', note=notes, velocity=0, channel=MIDI_CHANNEL))
+                self.midi_out.send(mido.Message('note_off', note=notes, velocity=0, channel=self.current_midi_channel))
             del self.active_notes[track_id]
 
     def handle_gesture(self, gesture: str):

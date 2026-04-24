@@ -1,5 +1,5 @@
 # mainApp.py - Qt Designer GUI + ALL old features + launch_gui restored
-# 1080p-friendly window size (fits your screen perfectly)
+# FIXED: Channel selection now works (one-hot 0-3 group, sequencer/presets respect selected channel)
 
 from PyQt6 import QtWidgets, QtCore, QtGui
 from finalgui import Ui_MainWindow
@@ -23,7 +23,7 @@ MIDI_TO_NOTE = {60: "C4", 62: "D4", 64: "E4", 65: "F4",
                 67: "G4", 69: "A4", 71: "B4", 72: "C5"}
 
 
-# ==================== CAMERA WORKER (unchanged) ====================
+# ==================== CAMERA WORKER (UNCHANGED) ====================
 class CameraWorker(QtCore.QThread):
     frame_ready = QtCore.pyqtSignal(QtGui.QImage)
     gesture_ready = QtCore.pyqtSignal(str)
@@ -79,7 +79,6 @@ class CameraWorker(QtCore.QThread):
 
                         detected = model.predict([coords])[0]
                         
-
                         midi2note = MIDI_TO_NOTE.get(GESTURE_TO_NOTE.get(detected), "Unknown")
                         wrist = hand_landmarks.landmark[0]
 
@@ -89,7 +88,6 @@ class CameraWorker(QtCore.QThread):
                         y = frame.shape[0] - 10
                         cv2.putText(frame, text, (x, y), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
-                        # Map detected gesture
                         if detected == "ok" and wrist.x > 0.5:
                             active_gesture = "ok"
                         elif detected == "fist" and wrist.x > 0.5:
@@ -106,11 +104,9 @@ class CameraWorker(QtCore.QThread):
                             active_gesture = "five"
                         elif detected == "six" and wrist.x > 0.5:
                             active_gesture = "six"
-                        elif detected == "fist" and wrist.x > 0.5   :
+                        elif detected == "fist" and wrist.x > 0.5:
                             active_gesture = "fist"
 
-
-                # Stability filter
                 if active_gesture == self.candidate:
                     self.cand_count += 1
                 else:
@@ -144,45 +140,38 @@ class CameraWorker(QtCore.QThread):
         self.wait()
 
 
-# ==================== LAUNCH HELPER (required by sequencer.py) ====================
 def launch_gui(sequencer):
-    """Simple launcher called by sequencer.py - keeps everything compatible"""
     app = QtWidgets.QApplication([])
     win = MainWindow(sequencer)
     win.show()
     app.exec()
 
 
-# ==================== MAIN WINDOW ====================
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, sequencer):
         super().__init__()
         self.setupUi(self)
 
-        # === 1080p-FRIENDLY WINDOW SIZE (fixed for your screen) ===
-        self.resize(1220, 720)           # Smaller default that fits perfectly
-        self.setMinimumSize(1050, 620)   # Allows resizing smaller without breaking
+        self.resize(1220, 720)
+        self.setMinimumSize(1050, 620)
 
         self.sequencer = sequencer
         self.step_buttons = {}
         self.visual_offset = -0.7
 
-        # Connect sequencer signals
         self.sequencer.step_signal.step_changed.connect(self.on_step_changed)
         self.sequencer.step_signal.sequence_changed.connect(self.on_sequence_changed)
 
-        # Buttons
         self.start_btn.clicked.connect(self.sequencer.start)
         self.stop_btn.clicked.connect(self.sequencer.stop)
         self.reset_btn.clicked.connect(self.reset_sequencer)
 
-        # Presets (all 4)
-        self.preset1_btn.clicked.connect(lambda: self.send_midi(34))
-        self.preset2_btn.clicked.connect(lambda: self.send_midi(35))
-        self.preset3_btn.clicked.connect(lambda: self.send_midi(32))
-        self.preset4_btn.clicked.connect(lambda: self.send_midi(33))
+        # ==================== PRESETS (GUI + MIDI) ====================
+        self.preset1_btn.clicked.connect(lambda: self.apply_preset(34))
+        self.preset2_btn.clicked.connect(lambda: self.apply_preset(35))
+        self.preset3_btn.clicked.connect(lambda: self.apply_preset(32))
+        self.preset4_btn.clicked.connect(lambda: self.apply_preset(33))
 
-        # BPM + Offset
         self.bpmSpinBox.setRange(20, 300)
         self.bpmSpinBox.setValue(int(self.sequencer.bpm))
         self.bpmSpinBox.valueChanged.connect(self.on_bpm_changed)
@@ -191,34 +180,31 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.offset_horizontal_slider.setValue(int(self.visual_offset * 10))
         self.offset_horizontal_slider.valueChanged.connect(self.on_offset_changed)
 
-        # Drawbars + readouts
-        self.drawbar_sliders = [self.sub_fundamental, self.sub_third, self.fundamental,
-                                self.second_harmonic, self.third_harmonic, self.fourth_harmonic,
-                                self.fifth_harmonic, self.sixth_harmonic, self.eight_harmonic]
-        self.drawbar_readouts = [self.sub_fundamental_readout, self.sub_third_readout,
-                                 self.fundamental_readout, self.second_harmonic_readout,
-                                 self.third_harmonic_readout, self.fourth_harmonic_readout,
-                                 self.fifth_harmonic_readout, self.sixth_harmonic_readout,
-                                 self.eighth_harmonic_readout]
+        # ==================== ONE-HOT CHANNEL GROUP (0-3) ====================
+        self.channel_group = QtWidgets.QButtonGroup(self)
+        self.channel_group.setExclusive(True)
+        self.channel_group.addButton(self.channel0_select_btn)
+        self.channel_group.addButton(self.channel1_select_btn_2)
+        self.channel_group.addButton(self.channel2_select_btn)
+        self.channel_group.addButton(self.channel3_select_btn_3)
+        self.channel0_select_btn.clicked.connect(lambda: self.set_channel(0))
+        self.channel1_select_btn_2.clicked.connect(lambda: self.set_channel(1))
+        self.channel2_select_btn.clicked.connect(lambda: self.set_channel(2))
+        self.channel3_select_btn_3.clicked.connect(lambda: self.set_channel(3))
+        self.channel0_select_btn.setChecked(True)
 
-        initial_drawbar_values = [8, 8, 8, 4, 0, 0, 0, 0, 4]
-
-        for i, slider in enumerate(self.drawbar_sliders):
-            slider.setRange(0, 8)
-            slider.setValue(initial_drawbar_values[i])          
-            slider.valueChanged.connect(lambda val, idx=i: self.on_drawbar_changed(idx, val))
-
-        # Pedal, Bass, Channel groups
+        # Pedal selector (None / Volume / Wah - default None) → current channel
         self.pedal_group = QtWidgets.QButtonGroup(self)
         self.pedal_group.setExclusive(True)
         self.pedal_group.addButton(self.none_btn)
         self.pedal_group.addButton(self.volume_btn)
         self.pedal_group.addButton(self.wah_btn)
-        self.none_btn.clicked.connect(lambda: self.send_midi(24, channel=1))
-        self.volume_btn.clicked.connect(lambda: self.send_midi(25, channel=1))
-        self.wah_btn.clicked.connect(lambda: self.send_midi(26, channel=1))
+        self.none_btn.clicked.connect(lambda: self.send_midi(24))
+        self.volume_btn.clicked.connect(lambda: self.send_midi(25))
+        self.wah_btn.clicked.connect(lambda: self.send_midi(26))
         self.none_btn.setChecked(True)
 
+        # Bass selector (Synth / String - default Synth) → always channel 2
         self.bass_group = QtWidgets.QButtonGroup(self)
         self.bass_group.setExclusive(True)
         self.bass_group.addButton(self.synth_btn)
@@ -227,24 +213,119 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.string_btn.clicked.connect(lambda: self.send_midi(98, channel=2))
         self.synth_btn.setChecked(True)
 
-        self.channel_group = QtWidgets.QButtonGroup(self)
-        self.channel_group.setExclusive(True)
-        self.channel_group.addButton(self.channel0_select_btn)
-        self.channel_group.addButton(self.channel1_select_btn_2)
-        self.channel0_select_btn.clicked.connect(lambda: self.set_channel(0))
-        self.channel1_select_btn_2.clicked.connect(lambda: self.set_channel(1))
-        self.channel0_select_btn.setChecked(True)
+        # Leslie speed selector (Slow / Fast - default Slow) → current channel
+        self.leslie_group = QtWidgets.QButtonGroup(self)
+        self.leslie_group.setExclusive(True)
+        self.leslie_group.addButton(self.slow_btn)
+        self.leslie_group.addButton(self.fast_btn)
+        self.slow_btn.clicked.connect(lambda: self.send_midi(27))
+        self.fast_btn.clicked.connect(lambda: self.send_midi(28))
+        self.slow_btn.setChecked(True)
 
-        # Sequencer grid
+        # ==================== DRAWBAR CONTROLS ====================
+        self.drawbar_inc_buttons = [
+            self.mix_inc_btn, self.trem_inc_btn,
+            self.btn7_18, self.btn7_19, self.btn7_22, self.btn7_20,
+            self.btn7_21, self.btn7_23, self.btn7_26, self.btn7_25, self.btn7_24
+        ]
+
+        self.drawbar_dec_buttons = [
+            self.btn7_47, self.btn7_40,
+            self.btn7_46, self.btn7_48, self.btn7_41, self.btn7_43,
+            self.btn7_39, self.btn7_38, self.btn7_45, self.btn7_44, self.btn7_42
+        ]
+
+        self.progress_bars = [
+            self.progressBar, self.progressBar_2,
+            self.progressBar_12, self.progressBar_6, self.progressBar_4,
+            self.progressBar_5, self.progressBar_7, self.progressBar_10,
+            self.progressBar_9, self.progressBar_8, self.progressBar_11
+        ]
+
+        self.drawbar_readouts = [
+            self.mix_readout_label, self.trem_readout_label,
+            self.sub_fundamental_readout, self.sub_third_readout,
+            self.fundamental_readout, self.second_harmonic_readout,
+            self.third_harmonic_readout, self.fourth_harmonic_readout,
+            self.fifth_harmonic_readout, self.sixth_harmonic_readout,
+            self.eighth_harmonic_readout
+        ]
+
+        initial_values = [4, 5, 8, 8, 8, 4, 0, 0, 0, 0, 3]
+        for i in range(11):
+            self.progress_bars[i].setRange(0, 8)
+            self.progress_bars[i].setValue(initial_values[i])
+            self.drawbar_readouts[i].setText(str(initial_values[i]))
+
+            self.drawbar_inc_buttons[i].clicked.connect(
+                lambda _, idx=i: self._drawbar_increment(idx)
+            )
+            self.drawbar_dec_buttons[i].clicked.connect(
+                lambda _, idx=i: self._drawbar_decrement(idx)
+            )
+
         self._setup_sequencer_grid()
-
-        # Camera
         self._init_camera_thread()
 
-        # Initial UI
         self.on_sequence_changed()
         self.on_step_changed(0)
 
+    # ==================== PRESET HANDLER ====================
+    def apply_preset(self, preset_note):
+        self.send_midi(preset_note)
+
+        if preset_note == 34:      # Preset 1
+            values = [4, 5, 8, 8, 8, 4, 0, 0, 0, 0, 3]
+        elif preset_note == 35:    # Preset 2
+            values = [5, 0, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+        elif preset_note == 32:    # Preset 3
+            values = [0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0]
+        elif preset_note == 33:    # Preset 4
+            values = [4, 5, 0, 0, 8, 4, 0, 0, 0, 0, 0]
+        else:
+            return
+
+        for i in range(11):
+            self.progress_bars[i].setValue(values[i])
+            self.drawbar_readouts[i].setText(str(values[i]))
+
+    # ==================== DRAWBAR +/- (Mix=106, Trem=107, organ=97-105) ====================
+    def _drawbar_increment(self, idx):
+        current = self.progress_bars[idx].value()
+        if current < 8:
+            self.progress_bars[idx].setValue(current + 1)
+            self.drawbar_readouts[idx].setText(str(current + 1))
+            self._send_drawbar_midi(idx, increment=True)
+
+    def _drawbar_decrement(self, idx):
+        current = self.progress_bars[idx].value()
+        if current > 0:
+            self.progress_bars[idx].setValue(current - 1)
+            self.drawbar_readouts[idx].setText(str(current - 1))
+            self._send_drawbar_midi(idx, increment=False)
+
+    def _send_drawbar_midi(self, idx, increment=True):
+        if idx == 0:        # Mix
+            base = 106
+        elif idx == 1:      # Trem
+            base = 107
+        else:               # Organ drawbars
+            drawbar_num = idx - 2
+            base = 96 + (drawbar_num + 1)
+
+        if self.sequencer.midi_out:
+            if increment:
+                self.sequencer.midi_out.send(mido.Message('note_on', note=108, velocity=100, channel=0))
+                self.sequencer.midi_out.send(mido.Message('note_on', note=base, velocity=100, channel=0))
+                time.sleep(0.02)
+                self.sequencer.midi_out.send(mido.Message('note_off', note=base, velocity=0, channel=0))
+                self.sequencer.midi_out.send(mido.Message('note_off', note=108, velocity=0, channel=0))
+            else:
+                self.sequencer.midi_out.send(mido.Message('note_on', note=base, velocity=100, channel=0))
+                time.sleep(0.02)
+                self.sequencer.midi_out.send(mido.Message('note_off', note=base, velocity=0, channel=0))
+
+    # ==================== ALL OTHER METHODS (unchanged) ====================
     def _setup_sequencer_grid(self):
         gesture_list = GESTURES
         total_steps = self.sequencer.get_sequence_state()["total_steps"]
@@ -278,23 +359,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.offset_num_display.setText(f"{self.visual_offset:.1f}")
         self.on_step_changed(self.sequencer.current_step)
 
-    def on_drawbar_changed(self, idx, val):
-        if idx < len(self.drawbar_readouts):
-            self.drawbar_readouts[idx].setText(str(val))
-        base = 96 + (idx + 1)
-        if self.sequencer.midi_out:
-            if val > 0:
-                self.sequencer.midi_out.send(mido.Message('note_on', note=108, velocity=100, channel=0))
-                self.sequencer.midi_out.send(mido.Message('note_on', note=base, velocity=100, channel=0))
-                time.sleep(0.02)
-                self.sequencer.midi_out.send(mido.Message('note_off', note=base, velocity=0, channel=0))
-                self.sequencer.midi_out.send(mido.Message('note_off', note=108, velocity=0, channel=0))
-            else:
-                self.sequencer.midi_out.send(mido.Message('note_on', note=base, velocity=100, channel=0))
-                time.sleep(0.02)
-                self.sequencer.midi_out.send(mido.Message('note_off', note=base, velocity=0, channel=0))
-
-    def send_midi(self, note, velocity=100, channel=0):
+    def send_midi(self, note, velocity=100, channel=None):
+        """Send MIDI on the currently selected channel by default"""
+        if channel is None:
+            channel = getattr(self.sequencer, 'current_midi_channel', 0)
         if self.sequencer.midi_out:
             self.sequencer.midi_out.send(mido.Message('note_on', note=note, velocity=velocity, channel=channel))
             QtCore.QTimer.singleShot(50, lambda: self.sequencer.midi_out.send(
