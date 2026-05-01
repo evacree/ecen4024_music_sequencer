@@ -14,7 +14,6 @@ A real-time music sequencer and synthesizer based on hand gesture inputs through
 - [MIDI Configuration](#midi-configuration)
 - [Gesture Mapping](#gesture-mapping)
 - [Pure Data Sequencer](#pure-data-sequencer)
-- [Project Structure](#project-structure)
 - [Known Issues](#known-issues)
 - [Future Work](#future-work)
 - [Authors](#authors)
