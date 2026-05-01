@@ -101,7 +101,6 @@ class CameraWorker(QObject):
 
 
 
-# Define a window class
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -132,7 +131,6 @@ class MainWindow(QMainWindow):
         sequencer_widget = QWidget()
         sequencer_widget.setLayout(grid)
 
-        # --- Camera Positioning | Mediapipe Display ---
 
         self.video_label = QLabel("Mediapipe")
         self.video_label.setAlignment(Qt.AlignCenter)
@@ -142,7 +140,6 @@ class MainWindow(QMainWindow):
         vbox = QVBoxLayout(camera_widget)
         vbox.addWidget(self.video_label)
 
-        # --- Main horizontal layout ---
         
 
         main_layout = QHBoxLayout()
@@ -201,13 +198,6 @@ if __name__=="__main__":
     ui = MainWindow()
     ui.show()
     app.exec()
-
-
-
-
-
-
-
 
 
 

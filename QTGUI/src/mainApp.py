@@ -1,5 +1,4 @@
-# mainApp.py - Qt Designer GUI + ALL old features + launch_gui restored
-# FIXED: Channel selection now works (one-hot 0-3 group, sequencer/presets respect selected channel)
+# mainApp.py - Qt Designer GUI 
 
 from PyQt6 import QtWidgets, QtCore, QtGui
 from finalgui import Ui_MainWindow
@@ -12,6 +11,8 @@ import warnings
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
+# Copied over from sequencer.py.
+
 GESTURES = ["ok", "fist", "one", "two", "three", "four", "five", "six"]
 
 GESTURE_TO_NOTE = {
@@ -23,7 +24,7 @@ MIDI_TO_NOTE = {60: "C4", 62: "D4", 64: "E4", 65: "F4",
                 67: "G4", 69: "A4", 71: "B4", 72: "C5"}
 
 
-# ==================== CAMERA WORKER (UNCHANGED) ====================
+# CLASS: Creates the MediaPipe hand gesture model.
 class CameraWorker(QtCore.QThread):
     frame_ready = QtCore.pyqtSignal(QtGui.QImage)
     gesture_ready = QtCore.pyqtSignal(str)
@@ -43,7 +44,7 @@ class CameraWorker(QtCore.QThread):
     def run(self):
         try:
             import pickle
-            MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "MediaPipe", "gesture_model.pkl")
+            MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "MediaPipe", "gesture_model.pkl") # Trained model file.
             with open(MODEL_PATH, "rb") as f:
                 model = pickle.load(f)
 
@@ -64,7 +65,7 @@ class CameraWorker(QtCore.QThread):
                 frame = cv2.flip(frame, 1)
 
                 frame_h, frame_w = frame.shape[:2]
-                cv2.line(frame, (frame_w // 2, 0), (frame_w // 2, frame_h), (0, 0, 255), 3)
+                cv2.line(frame, (frame_w // 2, 0), (frame_w // 2, frame_h), (0, 0, 255), 3) # Left = dead zone, Right = active zone.
 
                 rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 results = hands.process(rgb)
@@ -140,13 +141,14 @@ class CameraWorker(QtCore.QThread):
         self.wait()
 
 
+# METHOD: Used by sequencer for easy launch.
 def launch_gui(sequencer):
     app = QtWidgets.QApplication([])
     win = MainWindow(sequencer)
     win.show()
     app.exec()
 
-
+# CLASS: Main GUI display creation (with help from finalgui.py).
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, sequencer):
         super().__init__()
@@ -157,7 +159,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.sequencer = sequencer
         self.step_buttons = {}
-        self.visual_offset = -0.7
+        self.visual_offset = -0.7 # Default.
 
         self.sequencer.step_signal.step_changed.connect(self.on_step_changed)
         self.sequencer.step_signal.sequence_changed.connect(self.on_sequence_changed)
@@ -166,21 +168,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.stop_btn.clicked.connect(self.sequencer.stop)
         self.reset_btn.clicked.connect(self.reset_sequencer)
 
-        # ==================== PRESETS (GUI + MIDI) ====================
+        # Organ presets.
         self.preset1_btn.clicked.connect(lambda: self.apply_preset(34))
         self.preset2_btn.clicked.connect(lambda: self.apply_preset(35))
         self.preset3_btn.clicked.connect(lambda: self.apply_preset(32))
         self.preset4_btn.clicked.connect(lambda: self.apply_preset(33))
 
+        # BPM.
         self.bpmSpinBox.setRange(20, 300)
         self.bpmSpinBox.setValue(int(self.sequencer.bpm))
         self.bpmSpinBox.valueChanged.connect(self.on_bpm_changed)
 
+        # Visual offset slider
         self.offset_horizontal_slider.setRange(-40, 40)
         self.offset_horizontal_slider.setValue(int(self.visual_offset * 10))
         self.offset_horizontal_slider.valueChanged.connect(self.on_offset_changed)
 
-        # ==================== ONE-HOT CHANNEL GROUP (0-3) ====================
+        # MIDI channel buttons.
         self.channel_group = QtWidgets.QButtonGroup(self)
         self.channel_group.setExclusive(True)
         self.channel_group.addButton(self.channel0_select_btn)
@@ -193,7 +197,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.channel3_select_btn_3.clicked.connect(lambda: self.set_channel(3))
         self.channel0_select_btn.setChecked(True)
 
-        # Pedal selector (None / Volume / Wah - default None) → current channel
+        # Pedal buttons.
         self.pedal_group = QtWidgets.QButtonGroup(self)
         self.pedal_group.setExclusive(True)
         self.pedal_group.addButton(self.none_btn)
@@ -204,7 +208,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.wah_btn.clicked.connect(lambda: self.send_midi(26))
         self.none_btn.setChecked(True)
 
-        # Bass selector (Synth / String - default Synth) → always channel 2
+        # Bass tone buttons.
         self.bass_group = QtWidgets.QButtonGroup(self)
         self.bass_group.setExclusive(True)
         self.bass_group.addButton(self.synth_btn)
@@ -213,7 +217,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.string_btn.clicked.connect(lambda: self.send_midi(98, channel=2))
         self.synth_btn.setChecked(True)
 
-        # Leslie speed selector (Slow / Fast - default Slow) → current channel
+        # Leslie buttons.
         self.leslie_group = QtWidgets.QButtonGroup(self)
         self.leslie_group.setExclusive(True)
         self.leslie_group.addButton(self.slow_btn)
@@ -222,7 +226,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.fast_btn.clicked.connect(lambda: self.send_midi(28))
         self.slow_btn.setChecked(True)
 
-        # ==================== DRAWBAR CONTROLS ====================
+        # Organ drawbar controls.
         self.drawbar_inc_buttons = [
             self.mix_inc_btn, self.trem_inc_btn,
             self.btn7_18, self.btn7_19, self.btn7_22, self.btn7_20,
@@ -251,7 +255,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.eighth_harmonic_readout
         ]
 
-        initial_values = [4, 5, 8, 8, 8, 4, 0, 0, 0, 0, 3]
+        initial_values = [4, 5, 8, 8, 8, 4, 0, 0, 0, 0, 3] # Default organ values from SuperCollider.
         for i in range(11):
             self.progress_bars[i].setRange(0, 8)
             self.progress_bars[i].setValue(initial_values[i])
@@ -270,9 +274,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.on_sequence_changed()
         self.on_step_changed(0)
 
-    # ==================== PRESET HANDLER ====================
+    # Preset organ drawbar values from SuperCollider.
     def apply_preset(self, preset_note):
-        self.send_midi(preset_note)
+        self.send_midi(preset_note) # Activate preset in SuperCollider.
 
         if preset_note == 34:      # Preset 1
             values = [4, 5, 8, 8, 8, 4, 0, 0, 0, 0, 3]
@@ -289,7 +293,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.progress_bars[i].setValue(values[i])
             self.drawbar_readouts[i].setText(str(values[i]))
 
-    # ==================== DRAWBAR +/- (Mix=106, Trem=107, organ=97-105) ====================
+    # Drawbar +/- functions for SuperCollider.
     def _drawbar_increment(self, idx):
         current = self.progress_bars[idx].value()
         if current < 8:
@@ -314,18 +318,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             base = 96 + (drawbar_num + 1)
 
         if self.sequencer.midi_out:
-            if increment:
+            if increment: # Hold 108, send base.
                 self.sequencer.midi_out.send(mido.Message('note_on', note=108, velocity=100, channel=0))
                 self.sequencer.midi_out.send(mido.Message('note_on', note=base, velocity=100, channel=0))
                 time.sleep(0.02)
                 self.sequencer.midi_out.send(mido.Message('note_off', note=base, velocity=0, channel=0))
                 self.sequencer.midi_out.send(mido.Message('note_off', note=108, velocity=0, channel=0))
-            else:
+            else: # (decrement) Send base.
                 self.sequencer.midi_out.send(mido.Message('note_on', note=base, velocity=100, channel=0))
                 time.sleep(0.02)
                 self.sequencer.midi_out.send(mido.Message('note_off', note=base, velocity=0, channel=0))
 
-    # ==================== ALL OTHER METHODS (unchanged) ====================
+
     def _setup_sequencer_grid(self):
         gesture_list = GESTURES
         total_steps = self.sequencer.get_sequence_state()["total_steps"]
@@ -360,7 +364,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.on_step_changed(self.sequencer.current_step)
 
     def send_midi(self, note, velocity=100, channel=None):
-        """Send MIDI on the currently selected channel by default"""
         if channel is None:
             channel = getattr(self.sequencer, 'current_midi_channel', 0)
         if self.sequencer.midi_out:

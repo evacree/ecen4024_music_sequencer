@@ -1,6 +1,4 @@
 # QTGUI/src/main_TEST.py
-# Evan Acree | 4/15/26
-
 
 import sys
 import cv2
@@ -85,7 +83,7 @@ class CameraWorker(QThread):
                     continue
 
                 frame = cv2.flip(frame, 1)
-                # Draw vertical dead-zone divider at center of frame
+                
                 h, w, _ = frame.shape
                 cv2.line(frame, (w // 2, 0), (w // 2, h), (0, 0, 255), 2)
                 rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -102,7 +100,6 @@ class CameraWorker(QThread):
                         if detected in GESTURES:
                             active_gesture = detected
 
-                # Stability filter
                 if active_gesture == self.candidate:
                     self.cand_count += 1
                 else:
@@ -458,7 +455,6 @@ class SequencerGUI(QMainWindow):
         event.accept()
 
 
-# ==================== CAMERA WORKER (MediaPipe) ====================
 class CameraWorker(QThread):
     frame_ready = pyqtSignal(QImage)
     gesture_ready = pyqtSignal(str)   # Only emitted when gesture is stable.

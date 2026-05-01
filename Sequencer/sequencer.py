@@ -1,7 +1,7 @@
 # Sequencer/sequencer.py
-# Evan Acree | 4/1/26
+
 # TODO: Bugs -- delays on the order of -1.5, -0.5, 0.5, 1.5, ... cause note tracker to show on even beats only.
-#       Testing -- WORKS with MediaPipe and hand gestures, but on the TEST (old) version. New version misplaces & overplaces frequently.
+#               GUI scaling is a bit off, causing some parts to be squished on non-1440p monitors.
 
 import time                                     # Used for sleep, perf_counter.
 import threading                                # Used for running sequencer independently (in background) of GUI.
@@ -64,7 +64,7 @@ class GestureSequencer:
         self.midi_listener_thread = None
         self.last_step_time = 0
         self.step_signal = StepSignal()
-        self.last_gesture_time = {}         # ← NEW: Per-track debounce timer to stop gesture spam
+        self.last_gesture_time = {}         # Debouncing.
         self._open_midi_ports()
         self.current_midi_channel = 0
 
@@ -211,8 +211,7 @@ class GestureSequencer:
             del self.active_notes[track_id]
 
     def handle_gesture(self, gesture: str):
-        """Called every time MediaPipe sends a gesture.
-           Now includes debounce so the same gesture can't spam the sequencer while the hand is held."""
+        
         if gesture not in GESTURE_TO_NOTE:
             return
 
@@ -236,7 +235,7 @@ class GestureSequencer:
             track_notes.append(midi_note)
             self.track_pitches[track_id] = midi_note
 
-        # Tell GUI to refresh the grid immediately
+        # Tell GUI to refresh the grid immediately.
         self.step_signal.sequence_changed.emit()
 
     def get_sequence_state(self):
@@ -251,7 +250,7 @@ class GestureSequencer:
         }
 
 
-# ----- Creates sequencer and sets up GUI from QTGUI/src/main_TEST.py. -----
+# ----- Creates sequencer and sets up GUI from QTGUI/src/mainApp.py. -----
 if __name__ == "__main__":
     seq = GestureSequencer()
     

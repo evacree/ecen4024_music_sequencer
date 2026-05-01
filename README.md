@@ -23,7 +23,7 @@ A real-time music sequencer and synthesizer based on hand gesture inputs through
 
 ## Overview
 
-This project is a computer vision based hand gesture music sequecner that allows a user to interact with a sequencer using live hand gestures. The camera captures and recognizes movements and gestures, passes it to a sequencer to be placed. A synthesizer creates live notes and pitches associated with each gesture. A GUI shows the whole process and allows the user to interact with the sequencer in a traditional way.
+This project is a computer vision based hand gesture music sequencer/synthesizer that allows a user to interact with a sequencer using live hand gestures. The camera captures and recognizes movements and gestures, then passes it to a sequencer to be placed. A synthesizer lastly creates live notes and pitches associated with each gesture. A GUI shows the whole process and allows the user to interact with the sequencer with manual input, as well.
 
 The goal of this project is to create a completely touchless, intuitive, and accurate music interface tha combines computer vision, machine learning, MIDI communication, and music production and sequencing into a single interactive system.
 
@@ -33,11 +33,11 @@ The system is made of four parts:
 
 Gesture Recognition - A camera captures live video of the user's hand. Frames are processed live using OpenCV. MediaPipe Hand Landmarks task detects hand landmarks (joints, wrist, fingetips) for each frame. Landmark data is passed to a trained classification model to predict gesture.
 
-Synthesizer - Real-time sound output is created using Supercollider. Different instruments are utilized - synth, organ, percussion.
+Synthesizer - Real-time sound output is created using Supercollider. Different instruments are utilized - organ (CH 0 & 1), bass (CH 2), and percussion (CH3).
 
-Sequencer - Gestures are mapped to a synthesizer output and pitch, and stored in a two measure sequencer. Notes are placed on beat.
+Sequencer - Gestures are mapped to a synthesizer output and pitch, and stored in a two measure sequencer. Notes are placed on beat, which is subdivided at the eighth note. Simple Python packages such as time, threading, & mido (MIDI) are used to implement this.
 
-GUI - A visual output for everything, sequencer, camera window, and control settings are visible/usable for the user. GUI is implemented using PyQT6.
+GUI - A visual output for sequencer, camera window, and control settings are visible/usable for the user. GUI is implemented using PyQT6.
 
 ## Features
 
@@ -96,18 +96,27 @@ tzdata==2025.3
 
 ## Installation
 
-1. Clone the repository
+1. Clone the repository.
 
-2. Install all dependencies and programs
+2. Install all dependencies above via pip or another python install manager.
+
+3. Install SuperCollider & LoopMIDI.
 
 ## Running the Project
 
-Open Supercollider and Python. 
-Run sequencer.py script.
+Make sure your two virtual MIDI ports (MediaPipe_PureData and PureData_SuperCollider) are created within LoopMIDI.
+
+Run the sequencer.py script to start everything except sound synthesis. Your camera must be working for this.
+
+Run EITHER Synth.py for auto-start of SuperCollider, OR the Synth4ChannelVer3 file within the same folder directly VIA Supercollider GUI.
+
+You should now hear sound if the sequencer starts and a note is present on the track.
 
 ## MIDI Configuration
 
-The sequencer pulls from Supercollider.
+You must have a virtual MIDI port program such as LoopMIDI running while the project is active, as this is how the sequencer & synthesizer communicate. 
+
+The main MIDI port connection is between sequencer.py in Python and Synth4ChannelVer3.scd in SuperCollider. It sends over pitch, volume, channel, and ON/OFF status for each note, allowing the sequencer to correctly turn on and off specific sounds.
 
 ## Gesture Mapping
 
@@ -134,25 +143,23 @@ All gestures can be changed, added samples to, retrained, etc using collect_data
 
 -Plays notes
 -Stores notes positions in measures
--Routing synth sounds
+-Prompting synth sounds
 -Responds to gestures
 -Playback
 
-## Project Structure
-
-
-
 ## Known Issues
 
--Gesture misclassification can occur
--Recognition depends on lighting, angle, distance to camera
+-Gesture misclassification can occur.
+-Recognition depends on lighting, angle, distance to camera.
+-GUI scaling on non-1440p displays is incorrect.
+-Changing channels while sequencer is running can cause notes to never be turned off.
 
 ## Future Work
 
--Add left hand gestures for sequencer settings control without having to click the mouse
--Improve accuracy - different users,hand sizes, distances, camera angles, lightings
--Include theremin script somehow/able to shift between normal sequencing mode and thermin mode for live play with a previously sequcnes back track made by user
--More instruments
+-Add left hand gestures for sequencer settings control without having to click the mouse.
+-Improve accuracy - different users, hand sizes, distances, camera angles, lightings.
+-Include theremin script somehow/able to shift between normal sequencing mode and thermin mode for live play with a previously sequenced back track made by user.
+-More instruments!
 
 ## Authors
 

@@ -7,7 +7,7 @@ import cv2
 import mido
 import mediapipe as mp
 
-# import sklearn  # optional, not required in code but required as a dependency
+# import sklearn
 
 warnings.filterwarnings(
     "ignore",
@@ -43,7 +43,6 @@ GESTURE_TO_NOTE = {
 STABLE_ON = 4   # frames required before accepting a new gesture
 STABLE_OFF = 4  # frames required before releasing to None
 
-# Camera settings (tune down for speed)
 FRAME_W = 600
 FRAME_H = 500
 
@@ -65,17 +64,14 @@ def send_note_off(outport_obj: mido.ports.BaseOutput, note: int) -> None:
 
 
 def main() -> None:
-    # --- MIDI ---
     print("MIDI outputs:", mido.get_output_names())
     outport = mido.open_output(PORT_NAME)
 
-    # --- Load model ---
     model_path = os.path.join(os.path.dirname(__file__), "gesture_model.pkl")
     with open(model_path, "rb") as f:
         model = pickle.load(f)
 
-    # --- Camera ---
-    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # DirectShow = faster on Windows
+    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) 
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_W)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_H)
 
@@ -85,7 +81,6 @@ def main() -> None:
 
     cv2.namedWindow("capture image", cv2.WINDOW_NORMAL)
 
-    # --- MediaPipe Hands (Solutions API) ---
     mp_drawing = mp.solutions.drawing_utils
     mp_hands = mp.solutions.hands
 
@@ -94,10 +89,9 @@ def main() -> None:
         max_num_hands=2,
         min_detection_confidence=0.4,
         min_tracking_confidence=0.4,
-        # model_complexity=0,  # uncomment for more speed if acceptable
+        # model_complexity=0,  
     )
 
-    # --- Gesture stability state ---
     candidate = None
     cand_count = 0
     stable_gesture = None
@@ -105,7 +99,7 @@ def main() -> None:
 
     current_note = None
 
-    last_print = 0.0  # throttle console spam
+    last_print = 0.0  
 
     try:
         while True:
