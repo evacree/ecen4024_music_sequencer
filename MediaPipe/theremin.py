@@ -1,4 +1,5 @@
 import cv2
+import os
 import numpy as np
 import time
 import mido
@@ -79,11 +80,9 @@ def map_range(val, in_min, in_max, out_min, out_max):
 MIN_NOTE = 60
 MAX_NOTE = 72
 
-
-MODEL_PATH = "gesture_model.pkl"
-
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "gesture_model.pkl")
 with open(MODEL_PATH, "rb") as f:
-    data = pickle.load(f)
+    model = pickle.load(f)
 
 cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) # Windows DirectShow chosen
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
