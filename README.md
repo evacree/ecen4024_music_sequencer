@@ -42,56 +42,99 @@ GUI - A visual output for sequencer, camera window, and control settings are vis
 ## Features
 
 -Real time hand gesture recognition
+
 -MediaPipe hand landmark detection
+
 -Machine learning model to classify gestures
+
 -Gesture controlled note placement
+
 -Python based sequencing
+
 -MIDI communication between sequencer and synthesizer
+
 -Custom gesture training pipeline
+
 -Touchless music sequencing
 
 ## Hardware Requirements
 
 -Computer capable of running Python, PyQT, Supercollider
+
 -USB Camera or built in computer camera is fine
+
 -Speakers/headphones
+
 -Hand
 
 ## Software Requirements
 
 absl-py==2.4.0
+
 attrs==25.4.0
+
 cffi==2.0.0
+
 contourpy==1.3.2
+
 cycler==0.12.1
+
 flatbuffers==25.12.19
+
 fonttools==4.61.1
+
 joblib==1.4.2
+
 kiwisolver==1.4.9
+
 matplotlib==3.10.8
+
 mediapipe==0.10.14                    
+
 mido==1.3.3
+
 ml_dtypes==0.5.4
+
 numpy==1.26.4
+
 opencv-contrib-python==4.8.1.78       
+
 packaging==26.0
+
 pandas==2.3.3
+
 pillow==12.1.0
+
 protobuf==4.25.8
+
 pycparser==3.0
+
 pyparsing==3.3.2
+
 PyQt6==6.7.0
+
 PyQt6-Qt6==6.7.0
+
 PyQt6_sip==13.11.1
+
 python-dateutil==2.9.0.post0
+
 python-rtmidi==1.5.8
+
 pytz==2025.2
+
 scikit-learn==1.5.0                   
+
 scipy==1.13.1
+
 sentencepiece==0.2.1
+
 six==1.17.0
+
 sounddevice==0.5.5
+
 threadpoolctl==3.5.0
+
 tzdata==2025.3
 
 ## Installation
@@ -129,6 +172,7 @@ fist - D3 - fist with fingers facing camera
 one - E3 - index finger up with fingers facing camera
 
 two - F3 - index and middle finger up
+
 three - G3 - thumb, index, and middle finger up
 
 four - A3 - thumb, index, middle, and pinky finger up
@@ -142,28 +186,41 @@ All gestures can be changed, added samples to, retrained, etc using collect_data
 ## Sequencer
 
 -Plays notes
+
 -Stores notes positions in measures
+
 -Prompting synth sounds
+
 -Responds to gestures
+
 -Playback
 
 ## Known Issues
 
 -Gesture misclassification can occur.
+
 -Recognition depends on lighting, angle, distance to camera.
+
 -GUI scaling on non-1440p displays is incorrect.
+
 -Changing channels while sequencer is running can cause notes to never be turned off.
 
 ## Future Work
 
 -Add left hand gestures for sequencer settings control without having to click the mouse.
+
 -Improve accuracy - different users, hand sizes, distances, camera angles, lightings.
+
 -Include theremin script somehow/able to shift between normal sequencing mode and thermin mode for live play with a previously sequenced back track made by user.
+
 -More instruments!
 
 ## Authors
 
 Evan Acree - Sequencer
+
 Abbie Schlatter - Hand Gesture Recogntion
+
 Nikolas Brouwer - Synthesizer
+
 Ricardo Landeros Aranda - GUI
