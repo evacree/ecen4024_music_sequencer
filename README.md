@@ -1,6 +1,6 @@
 # Hand Gesture Music Sequencer
 
-A real-time music sequencer and synthesizer based on hand gesture inputs through a live video feed. Created for OkSTATE ECEN4024 - Capstone Design as an ECE departmental project under Nate Lannan.
+A real-time music sequencer and synthesizer based on hand gesture inputs through a live video feed. Created for OkSTATE ECEN4024 - Capstone Design as a Spring 2026 ECE departmental project under Nate Lannan.
 
 ## Table of Contents
 
